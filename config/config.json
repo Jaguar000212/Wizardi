@@ -1,0 +1,22 @@
+{
+  "bot": {
+    "token": "",
+    "name": "Wizardi",
+    "version": "v0.0.5.BETA",
+    "owner": "",
+    "permissions":"1375299005526",
+    "server": {
+      "name" : "",
+      "invite" : ""},
+    "about":{
+      "info":"I am a simple bot made by a school student and I am completely programmed by {owner} alone! Ideas were taken from some of the *good* GITs 🙃. He started with a censor bot for his server and ended up with me in front of you all. Please appreciate my master's efforts by helping him with bugs and your precious feedback!",
+      "cur_version": "`v0.0.5.BETA`",
+      "known_bugs": "No bugs recorded yet.",
+      "updates": "To be updated soon."
+    }
+  },
+  "api": {
+    "superhero_api" : "",
+    "mongoDB" : ""
+  }
+}
