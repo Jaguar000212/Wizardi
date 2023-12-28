@@ -132,7 +132,7 @@ class Bot(commands.AutoShardedBot):
             )
 
         elif isinstance(error, commands.errors.CommandInvokeError):
-            if type(error.__cause__) == disnake.errors.Forbidden:
+            if type(error.__cause__) is disnake.errors.Forbidden:
                 await ctx.send(
                     embed=disnake.Embed(
                         description=f"{self.icons['failed']} `My role's hierarchy and/or permissions don't allow me to do so.`"
@@ -140,7 +140,7 @@ class Bot(commands.AutoShardedBot):
                     delete_after=4,
                 )
 
-            elif type(error.__cause__) == disnake.errors.NotFound:
+            elif type(error.__cause__) is disnake.errors.NotFound:
                 pass
 
             else:
