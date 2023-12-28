@@ -445,7 +445,7 @@ class Moderator(commands.Cog):
                 colour=53759,
                 timestamp=dt.datetime.now(dt.timezone.utc),
             )
-        
+
             embed_dm = disnake.Embed(
             title="Timed-out!",
             description=f"You have been timed-out in `{ctx.guild.name}` for **{reason}**",
@@ -457,7 +457,7 @@ class Moderator(commands.Cog):
                 colour=53759,
                 timestamp=dt.datetime.now(dt.timezone.utc),
             )
-        
+
             embed_dm = disnake.Embed(
             title="Timed-out!",
             description=f"Your time-out has been removed in `{ctx.guild.name}` for **{reason}**.",

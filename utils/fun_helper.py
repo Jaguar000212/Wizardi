@@ -310,7 +310,7 @@ class TicTacToeButton(disnake.ui.Button["TicTacToe"]):
                 icon_url=view.player2.avatar.url,
             )
         if view.current_player == view.X:
-            
+
             if interaction.user == view.player1:
                 self.style = disnake.ButtonStyle.danger
                 self.emoji = f"{interaction.bot.icons['error']}"
@@ -329,7 +329,7 @@ class TicTacToeButton(disnake.ui.Button["TicTacToe"]):
                 )
                 embed.description = f"`Challenger` - {view.player2.mention} ({interaction.bot.icons['online']})\n`Opponent` - {view.player1.mention} ({interaction.bot.icons['error']})\n\n```diff\n- Current Turn - {view.player1}```"
         else:
-            
+
             if interaction.user == view.player2:
                 self.style = disnake.ButtonStyle.success
                 self.emoji = f"{interaction.bot.icons['online']}"
@@ -337,7 +337,7 @@ class TicTacToeButton(disnake.ui.Button["TicTacToe"]):
                 view.board[self.y][self.x] = view.O
                 view.current_player = view.X
                 embed.description = f"`Challenger` - {view.player2.mention} 99kl)\n`Opponent` - {view.player1.mention} ({interaction.bot.icons['error']})\n\n```diff\n- Current Turn - {view.player1}```"
-                
+
             elif interaction.user == view.player2:
                 await interaction.send(
                     "This isn't your turn!", ephemeral=True

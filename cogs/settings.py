@@ -11,7 +11,7 @@ class Settings(commands.Cog):
 
     def __init__(self, bot: Bot):
         self.bot = bot
-        
+
     @commands.slash_command(description="Check Bot's latency")
     async def ping(self, ctx: disnake.AppCmdInter):
         await ctx.response.defer()
