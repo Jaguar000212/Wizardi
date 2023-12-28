@@ -21,16 +21,15 @@ class Nsfw(commands.Cog):
             print("Could not get a neko")
         if not ctx.channel.is_nsfw():
             raise NSFWChannel("These commands work only in NSFW channels.")
-        else:
-            embed = disnake.Embed(colour=0x428DFF)
-            try:
-                embed.set_image(url=json.loads(req.text)["image"])
-                embed.set_author(
-                    name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url
-                )
-            except KeyError:
-                embed.description = "No image found"
-            return embed
+        embed = disnake.Embed(colour=0x428DFF)
+        try:
+            embed.set_image(url=json.loads(req.text)["image"])
+            embed.set_author(
+                name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url
+            )
+        except KeyError:
+            embed.description = "No image found"
+        return embed
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
