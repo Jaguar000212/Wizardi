@@ -337,7 +337,7 @@ class Config:
         except Exception as error:
             logger.error("Failed to connect to Database")
             logger.exception(error)
-            exit(code=1)
+            sys.exit(code=1)
 
     @property
     def token(self):
@@ -345,7 +345,7 @@ class Config:
             return self.data["bot"]["token"]
         except AttributeError:
             logger.error("No token found.")
-            exit(code=1)
+            sys.exit(code=1)
 
     @property
     def name(self):
@@ -353,7 +353,7 @@ class Config:
             return self.data["bot"]["name"]
         except AttributeError:
             logger.error("Please specify bot's name first.")
-            exit(code=1)
+            sys.exit(code=1)
 
     @property
     def version(self):
@@ -361,7 +361,7 @@ class Config:
             return self.data["bot"]["version"]
         except AttributeError:
             logger.error("Please specify bot's version first.")
-            exit(code=1)
+            sys.exit(code=1)
 
     @property
     def owner(self):
@@ -371,7 +371,7 @@ class Config:
             logger.error(
                 "No owners found in config.\nIf you are the bot owner,\nplease add yourself to the owners list."
             )
-            exit(code=1)
+            sys.exit(code=1)
 
     @property
     def api_keys(self):
