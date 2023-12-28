@@ -91,7 +91,7 @@ class Fun(commands.Cog):
         if user.id == self.bot.user.id:
             return await ctx.send(
                 embed=disnake.Embed(
-                    description=f"*drinks beer with you* 🍻",
+                    description="*drinks beer with you* 🍻",
                     color=disnake.Colour.magenta(),
                 )
             )
