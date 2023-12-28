@@ -4,7 +4,7 @@ import json
 import requests
 import animec
 import datetime
-from disnake.ext.commands.params import Param
+from disnake.ext.commands.params import Param, Param
 
 from utils.exceptions import NoNeko
 from bot import Bot

@@ -1,8 +1,8 @@
 import disnake
 from disnake.ext import commands
+from disnake.ext.commands.params import Param
 import datetime as dt
 from bot import Bot
-from disnake.ext.commands.params import Param
 
 
 class Settings(commands.Cog):
