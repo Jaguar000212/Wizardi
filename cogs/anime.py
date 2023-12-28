@@ -18,7 +18,8 @@ class Anime(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    def neko_api(self, ctx, x, msg=""):
+    @staticmethod
+    def neko_api(ctx, x, msg=""):
         req = requests.get(f"http://api.nekos.fun:8080/api/{x}")
         if req.status_code != 200:
             raise NoNeko("Couldn't load image")

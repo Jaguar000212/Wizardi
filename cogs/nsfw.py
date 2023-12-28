@@ -15,7 +15,8 @@ class Nsfw(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    def neko_api(self, ctx, x):
+    @staticmethod
+    def neko_api(ctx, x):
         req = requests.get(f"http://api.nekos.fun:8080/api/{x}")
         if req.status_code != 200:
             print("Could not get a neko")
