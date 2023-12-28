@@ -140,7 +140,7 @@ class BotInformation:
         embed = disnake.Embed(colour=disnake.Colour.random())
         embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.display_avatar.url)
         for cog in self.bot.cogs:
-            if cog == "Message" or cog == "Help":
+            if cog in ("Message", "Help"):
                 continue
             cogs = self.bot.get_cog(cog)
             cmds = ""
