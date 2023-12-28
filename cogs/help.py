@@ -145,13 +145,12 @@ class Help(commands.Cog):
                 if cogs.qualified_name == "Nsfw":
                     if not ctx.channel.is_nsfw():
                         raise NSFWChannel("Only available in NSFW channels.")
-                    else:
-                        for command in cogs.get_slash_commands():
-                            embed.add_field(
-                                name=f"**/{command.body.name}**",
-                                value=f"DESCRIPTION - {command.body.description}",
-                                inline=False,
-                            )
+                    for command in cogs.get_slash_commands():
+                        embed.add_field(
+                            name=f"**/{command.body.name}**",
+                            value=f"DESCRIPTION - {command.body.description}",
+                            inline=False,
+                        )
                 else:
                     for command in cogs.get_slash_commands():
                         embed.add_field(
