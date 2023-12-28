@@ -407,11 +407,10 @@ class Fun(commands.Cog):
                     ephemeral=True,
                 )
                 return
-            else:
-                await ctx.send(
-                    embed=disnake.Embed(description="A challenge to me... Accepted"),
-                    ephemeral=True,
-                )
+            await ctx.send(
+                embed=disnake.Embed(description="A challenge to me... Accepted"),
+                ephemeral=True,
+            )
         if ctx.author == player:
             await ctx.send(
                 embed=disnake.Embed(description="You need someone else to play with!"),
