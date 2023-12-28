@@ -89,7 +89,8 @@ class MineswiperView(ui.View):
                 button.style = ButtonStyle.red
                 self.board[self.GetBoardRow(pos)][self.GetBoardPos(pos)] = "💣"
 
-    def GetBoardRow(self, pos):
+    @staticmethod
+    def GetBoardRow(pos):
         if pos in [0, 1, 2, 3, 4]:
             return 0
         if pos in [5, 6, 7, 8, 9]:
@@ -102,7 +103,8 @@ class MineswiperView(ui.View):
             return 4
         return False
 
-    def GetBoardPos(self, pos):
+    @staticmethod
+    def GetBoardPos(pos):
         if pos in [0, 1, 2, 3, 4]:
             return pos
         if pos in [5, 6, 7, 8, 9]:
