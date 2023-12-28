@@ -275,7 +275,7 @@ class Fun(commands.Cog):
                 except ak.CantGoBackAnyFurther as e:
                     await ctx.send(e)
                     continue
-            elif str(reaction.emoji) in ans_emoji.keys():
+            elif str(reaction.emoji) in ans_emoji:
                 try:
                     q = aki.answer(ans_emoji[str(reaction.emoji)])
                 except ak.InvalidAnswerError as e:
