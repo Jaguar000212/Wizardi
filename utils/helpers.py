@@ -316,7 +316,7 @@ class Config:
 
         with open("./config/icons.json", "r", encoding="utf-8") as f:
             self.icons = json.load(f)
-        
+
         self.initDB()
 
     async def logChannel(self, ctx) -> int:

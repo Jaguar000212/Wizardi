@@ -119,7 +119,7 @@ class Info(commands.Cog):
                 colour=1199267,
             )
             await ctx.send(embed=embed, delete_after=5)
-            
+
 
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
