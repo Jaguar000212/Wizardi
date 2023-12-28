@@ -63,7 +63,7 @@ class Help(commands.Cog):
                 icon_url=ctx.author.display_avatar.url,
             )
             for cog in self.bot.cogs:
-                if cog == "Message" or cog == "Help":
+                if cog in ("Message", "Help"):
                     continue
                 modules += f"> \{CogEmoji[cog]} **{cog}**\n"
                 cogs = self.bot.get_cog(cog)
