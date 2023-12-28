@@ -243,7 +243,7 @@ class Info(commands.Cog):
     @commands.slash_command(description="Get a fact")
     async def fact(self, ctx: disnake.AppCmdInter):
         await ctx.response.defer()
-        req = requests.get(f"https://api.popcat.xyz/fact")
+        req = requests.get("https://api.popcat.xyz/fact")
         data = (json.loads(req.text))["fact"]
         await ctx.send(embed=disnake.Embed(description=data))
 
@@ -252,7 +252,7 @@ class Info(commands.Cog):
     @commands.slash_command(description="Get a joke")
     async def joke(self, ctx: disnake.AppCmdInter):
         await ctx.response.defer()
-        req = requests.get(f"https://api.popcat.xyz/joke")
+        req = requests.get("https://api.popcat.xyz/joke")
         data = (json.loads(req.text))["joke"]
         await ctx.send(embed=disnake.Embed(description=data))
 

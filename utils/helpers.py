@@ -326,16 +326,16 @@ class Config:
 
     def initDB(self) -> None:
 
-        logger.info(f"CONNECTING TO DATABASE...")
+        logger.info("CONNECTING TO DATABASE...")
 
         self.loop = asyncio.get_event_loop()
         try:
             self.client = AsyncIOMotorClient(
                 self.data["api"]["mongoDB"], io_loop=self.loop
             )
-            logger.success(f"Connected to Database")
+            logger.success("Connected to Database")
         except Exception as error:
-            logger.error(f"Failed to connect to Database")
+            logger.error("Failed to connect to Database")
             logger.exception(error)
             exit(code=1)
 
