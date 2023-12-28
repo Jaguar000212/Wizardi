@@ -6,7 +6,7 @@ import disnake
 from disnake import AllowedMentions, Intents
 from disnake.ext import commands
 
-from utils.helpers import Config, Embed, Log
+from utils.helpers import Config, Embed
 from utils.exceptions import *
 
 

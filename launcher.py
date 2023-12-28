@@ -1,4 +1,4 @@
-from os import system, name
+from os import system
 from bot import Bot
 from disnake.errors import HTTPException
 
