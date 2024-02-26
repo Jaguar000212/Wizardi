@@ -14,20 +14,21 @@ intents = Intents.default()
 intents.members = True
 intents.message_content = True
 config = Config()
+sync_commands = commands.CommandSyncFlags.all()
 
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, *args, **kwargs):
         super().__init__(
             command_prefix=commands.when_mentioned,
-            strip_after_prefix=True,
-            allowed_mentions=AllowedMentions(everyone=False, users=True, roles=False),
+            command_sync_flags=sync_commands,
             intents=intents,
             reload=True,
             *args,
             **kwargs,
         )
         self.config = config
+        self.database = config.database
         self.logger = self.config.logger
         self.name = self.config.name
         self.version = self.config.version
@@ -71,7 +72,10 @@ class Bot(commands.AutoShardedBot):
         )
 
     async def on_ready(self):
-        pass
+        activity = disnake.Activity(
+            type=disnake.ActivityType.listening, name=f"your commands"
+        )
+        await self.change_presence(activity=activity, status=disnake.Status.online)
 
     async def on_shard_connect(self, shard_id: int):
         self.logger.info(

@@ -1,22 +1,22 @@
 {
   "bot": {
-    "token": "",
+    "token": "MTE3NjU0ODQ0NTE2MzYxODQ1NQ.G8mu5g.NUIFzTjQht6AC4wlX2xfTGnS39RwM-n32vuQ0Y",
     "name": "Wizardi",
-    "version": "v0.0.5.BETA",
-    "owner": "",
+    "version": "v0.1.0.BETA",
+    "owner": "1015643292593029210",
     "permissions":"1375299005526",
     "server": {
-      "name" : "",
-      "invite" : ""},
+      "name" : "Wizardi - Ultimate Discord Bot",
+      "invite" : "https://discord.gg/9h5dTMAaEx"},
     "about":{
       "info":"I am a simple bot made by a school student and I am completely programmed by {owner} alone! Ideas were taken from some of the *good* GITs 🙃. He started with a censor bot for his server and ended up with me in front of you all. Please appreciate my master's efforts by helping him with bugs and your precious feedback!",
-      "cur_version": "`v0.0.5.BETA`",
+      "cur_version": "`Version 0.1.0 (BETA)` - Latest stable available version!",
       "known_bugs": "No bugs recorded yet.",
       "updates": "To be updated soon."
     }
   },
   "api": {
-    "superhero_api" : "",
-    "mongoDB" : ""
+    "superhero_api" : 2527790687387610,
+    "mongoDB" : "mongodb+srv://Wizardi:V6nczmPk9bTzj-q@wizardi.e8p3r5b.mongodb.net/?retryWrites=true&w=majority"
   }
 }

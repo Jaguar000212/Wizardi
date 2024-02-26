@@ -16,7 +16,7 @@ class Moderator(commands.Cog):
 
     @commands.guild_only()
     @commands.slash_command(
-        name="channel-purge", description="Purge messages from a channel"
+        name="mod-channel-purge", description="Purge messages from a channel"
     )
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
@@ -60,7 +60,7 @@ class Moderator(commands.Cog):
         await ctx.send(embed=embed, delete_after=3)
 
     @commands.guild_only()
-    @commands.slash_command(name="channel-nuke", description="Nuke a channel")
+    @commands.slash_command(name="mod-channel-nuke", description="Nuke a channel")
     @commands.has_permissions(manage_messages=True, manage_channels=True)
     @commands.bot_has_permissions(manage_messages=True, manage_channels=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
@@ -90,7 +90,7 @@ class Moderator(commands.Cog):
             pass
 
     @commands.guild_only()
-    @commands.slash_command(name="channel-lock", description="Lock a channel")
+    @commands.slash_command(name="mod-channel-lock", description="Lock a channel")
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
@@ -137,7 +137,7 @@ class Moderator(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.guild_only()
-    @commands.slash_command(name="channel-unlock", description="Unlock a channel")
+    @commands.slash_command(name="mod-channel-unlock", description="Unlock a channel")
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
@@ -181,7 +181,7 @@ class Moderator(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.guild_only()
-    @commands.slash_command(name="channel-hide", description="Hide a channel")
+    @commands.slash_command(name="mod-channel-hide", description="Hide a channel")
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
@@ -232,7 +232,7 @@ class Moderator(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.guild_only()
-    @commands.slash_command(name="channel-show", description="Show a channel")
+    @commands.slash_command(name="mod-channel-show", description="Show a channel")
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
@@ -493,7 +493,7 @@ class Moderator(commands.Cog):
 
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.guild)
-    @commands.slash_command(description="Create a poll")
+    @commands.slash_command(name = "mod-poll", description="Create a poll")
     @commands.has_permissions(manage_guild=True)
     async def poll(
         self,

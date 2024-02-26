@@ -4,31 +4,37 @@ from disnake.ext import commands
 import requests
 import json
 import time
-import asyncio
-import akinator as ak
 from itertools import repeat
-from random import *
+from random import randint
 
-from utils.fun_helper import RPS, TicTacToe, MineswiperView
+from utils.funHelpers import *
 from bot import Bot
 
 
 class Fun(commands.Cog):
-    """
-    Some Fun Commands
-    """
+    """Some Fun Commands"""
 
     def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.slash_command(description="A fun hack command")
+    @commands.slash_command(name="fun-hack", description="A fun hack command")
     async def hack(
         self,
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="Member to be hacked"),
     ):
+        """
+        Hacks the specified member by simulating a hacking process.
+
+        Parameters:
+        - ctx: The context of the command.
+        - member: The member to be hacked.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         embed = disnake.Embed(
             description="Initialising injection", color=disnake.Colour.dark_teal()
@@ -50,104 +56,48 @@ class Fun(commands.Cog):
 
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.slash_command(description="Roll the slot machine")
+    @commands.slash_command(name="fun-slot", description="Roll the slot machine")
     async def slot(self, ctx: disnake.AppCmdInter):
+        """
+        Play a slot machine game.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
-        embed = disnake.Embed()
-        emojis = "🍎🍊🍐🍋🍉🍇🍓🍒🍈🍌🍍🥭🍏🍑🥝🥑"
-        a, b, c = [choice(emojis) for g in range(3)]
-        slotmachine = f"**[ {a} {b} {c} ]\n\n{ctx.author.name}**,"
-
-        if a == b == c:
-            embed.description = f"{slotmachine} All matching, you won! 🎉"
-            embed.colour = disnake.Colour.green()
-        elif (a == b) or (a == c) or (b == c):
-            embed.description = f"{slotmachine} 2 in a row, you won! 🎉"
-            embed.colour = disnake.Colour.yellow()
-        else:
-            embed.description = f"{slotmachine} No match, you lost 😢"
-            embed.colour = disnake.Colour.red()
-
+        embed = slotGame(ctx)
         await ctx.send(embed=embed)
 
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    @commands.slash_command(description="Give someone a beer! 🍻")
+    @commands.slash_command(name="fun-beer", description="Give someone a beer! 🍻")
     async def beer(
         self,
         ctx: disnake.AppCmdInter,
         user: disnake.Member = Param(None, description="Member to celebrate with"),
         *,
-        reason=Param(None, description="Reasone for celeb"),
+        reason: str = Param(None, description="Reason for celebration"),
     ):
+        """
+        Sends a beer offer to a member and waits for their reaction.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - user (disnake.Member, optional): The member to celebrate with. Defaults to None.
+        - reason (str, optional): The reason for the celebration. Defaults to None.
+        """
+
         await ctx.response.defer()
-        if not user or user.id == ctx.author.id:
-            return await ctx.send(
-                embed=disnake.Embed(
-                    description=f"**{ctx.author.name}**: paaaarty!🎉🍺",
-                    color=disnake.Colour.magenta(),
-                )
-            )
-        if user.id == self.bot.user.id:
-            return await ctx.send(
-                embed=disnake.Embed(
-                    description="*drinks beer with you* 🍻",
-                    color=disnake.Colour.magenta(),
-                )
-            )
-        if user.bot:
-            return await ctx.send(
-                embed=disnake.Embed(
-                    description=f"I would love to give beer to the bot **{ctx.author.name}**, but I don't think it will respond to you :/",
-                    color=disnake.Colour.magenta(),
-                )
-            )
-
-        beer_offer = f"**{user.name}**, you got a 🍺 offer from **{ctx.author.name}**"
-        beer_offer = f"{beer_offer}\n\n**Reason:** {reason}" if reason else beer_offer
-        await ctx.send(
-            embed=disnake.Embed(description=beer_offer, color=disnake.Colour.magenta())
-        )
-
-        def reaction_check(m):
-            if m.message_id == msg.id and m.user_id == user.id and str(m.emoji) == "🍻":
-                return True
-            return False
-
-        try:
-            msg = await ctx.original_message()
-            await msg.add_reaction("🍻")
-            await self.bot.wait_for(
-                "raw_reaction_add", timeout=30.0, check=reaction_check
-            )
-            await ctx.edit_original_message(
-                embed=disnake.Embed(
-                    description=f"**{user.name}** and **{ctx.author.name}** are enjoying a lovely beer together 🍻",
-                    color=disnake.Colour.magenta(),
-                )
-            )
-        except asyncio.TimeoutError:
-            await msg.delete()
-            await ctx.send(
-                embed=disnake.Embed(
-                    description=f"well, doesn't seem like **{user.name}** wanted a beer with you **{ctx.author.name}** ;-;",
-                    color=disnake.Colour.magenta(),
-                )
-            )
-        except disnake.Forbidden:
-            beer_offer = f"**{user.name}**, you got a 🍺 from **{ctx.author.name}**"
-            beer_offer = (
-                f"{beer_offer}\n\n**Reason:** {reason}" if reason else beer_offer
-            )
-            await ctx.edit_original_message(
-                embed=disnake.Embed(
-                    description=beer_offer, color=disnake.Colour.magenta()
-                )
-            )
+        await beerOffer(self.bot, user, ctx, reason)
 
     @commands.guild_only()
     @commands.cooldown(1, 15, commands.BucketType.user)
-    @commands.slash_command(description="Get an embeded gun on your avatar")
+    @commands.slash_command(
+        name="fun-gun", description="Get an embeded gun on your avatar"
+    )
     async def gun(
         self,
         ctx: disnake.AppCmdInter,
@@ -155,6 +105,14 @@ class Fun(commands.Cog):
             None, description="Member whose avatar is to be embedded"
         ),
     ):
+        """
+        Sends an embedded message with a gun image using the avatar of the specified member.
+
+        Parameters:
+        - ctx: The context of the command.
+        - user: The member whose avatar is to be embedded. If not provided, the author of the command will be used.
+        """
+
         await ctx.response.defer()
         if user is None:
             user = ctx.author
@@ -170,11 +128,21 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(2, 15, commands.BucketType.user)
     @commands.slash_command(
-        description="Translate your text into funny Lul Cat Language!"
+        name="fun-kitty", description="Translate your text into funny Lul Cat Language!"
     )
     async def kitty(
-        self, ctx: disnake.AppCmdInter, text=Param(description="Text to covert")
+        self, ctx: disnake.AppCmdInter, text: str = Param(description="Text to covert")
     ):
+        """
+        Sends a kitty image with the specified text.
+
+        Parameters:
+        - ctx: The context of the command.
+        - text: The text to be displayed on the kitty image.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         req = requests.get(f"https://api.popcat.xyz/lulcat?text={text}")
         data = (json.loads(req.text))["text"]
@@ -186,175 +154,17 @@ class Fun(commands.Cog):
         name="game-akinator", description="Simply akinator, you think it, we guess it"
     )
     async def akinator(self, ctx: disnake.AppCmdInter):
+        """
+        Starts an Akinator game.
+
+        Parameters:
+        - ctx: The context of the command.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
-        intro = disnake.Embed(
-            title="Akinator",
-            description=f"Hello, {ctx.author.mention} I am Akinator!!!\nThink about a real or fictional character. I will try to guess who it is",
-            color=disnake.Colour.blue(),
-        )
-        intro.set_thumbnail(
-            url="https://en.akinator.com/bundles/elokencesite/images/akinator.png?v93"
-        )
-        intro.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
-        intro.set_footer(
-            text=f"Requested by {ctx.author.display_name}",
-            icon_url=ctx.author.display_avatar.url,
-        )
-        bye = disnake.Embed(
-            title="Akinator",
-            description=f"\👋 B-Bye, {ctx.author.mention}\n\n*Akinator left the chat!!*",
-            color=disnake.Colour.blue(),
-        )
-        bye.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
-        bye.set_footer(
-            text=f"Requested by {ctx.author.display_name}",
-            icon_url=ctx.author.display_avatar.url,
-        )
-        bye.set_thumbnail(
-            url="https://i.pinimg.com/originals/28/fc/0b/28fc0b88d8ded3bb8f89cb23b3e9aa7b.png"
-        )
-        await ctx.send(embed=intro)
-
-        ans_emoji = {"👍🏻": "yes", "👎🏻": "no", "🤔": "probably", "🤷🏻": "idk", "🔙": "back"}
-
-        aki = ak.Akinator()
-        q = aki.start_game()
-        n = 0
-        while aki.progression <= 80:
-            n = n + 1
-            question = disnake.Embed(
-                title=f"Question {n}",
-                description=f"{q}\n\nAnswer:\n\n> `Yes(👍🏻)` | `No(👎🏻)`\n> `Probably(🤔)` | `Don't know(🤷🏻)`\n> `Back(🔙)`",
-                color=disnake.Colour.blue(),
-            )
-            ques = [
-                "https://i.imgflip.com/uojn8.jpg",
-                "https://ih1.redbubble.net/image.297680471.0027/flat,750x1000,075,f.u1.jpg",
-            ]
-            question.set_thumbnail(url=ques[randint(0, 1)])
-            question.set_author(
-                name=self.bot.user.display_name,
-                icon_url=f"{self.bot.user.avatar.url}",
-            )
-            question.set_footer(
-                text=f"for {ctx.author.display_name}",
-                icon_url=ctx.author.display_avatar.url,
-            )
-            ques = await ctx.channel.send(embed=question)
-
-            await ques.add_reaction("👍🏻")
-            await ques.add_reaction("👎🏻")
-            await ques.add_reaction("🤔")
-            await ques.add_reaction("🤷🏻")
-            await ques.add_reaction("🔙")
-
-            def check(react: disnake.Reaction, user: disnake.User):
-                if (
-                    user == ctx.author
-                    and react.message.id == ques.id
-                    and (react.emoji in ["👍🏻", "👎🏻", "🤔", "🤷🏻", "🔙"])
-                ):
-                    return True
-                return False
-
-            try:
-                reaction, user = await self.bot.wait_for(
-                    "reaction_add", check=check, timeout=30
-                )
-            except asyncio.TimeoutError:
-                await ctx.send("Sorry you took too long to respond!")
-                await ctx.send(embed=bye)
-                return
-            if str(reaction.emoji) == "🔙":
-                try:
-                    q = aki.back()
-                except ak.CantGoBackAnyFurther as e:
-                    await ctx.send(e)
-                    continue
-            elif str(reaction.emoji) in ans_emoji:
-                try:
-                    q = aki.answer(ans_emoji[str(reaction.emoji)])
-                except ak.InvalidAnswerError as e:
-                    await ctx.send(e)
-                    continue
-        aki.win()
-        answer = disnake.Embed(
-            title=aki.first_guess["name"],
-            description=f"{aki.first_guess['description']}\nRanking - {aki.first_guess['ranking']}",
-            color=disnake.Colour.blue(),
-        )
-        answer.set_image(url=aki.first_guess["absolute_picture_path"])
-        answer.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
-        answer.set_footer(
-            text=f"Was I correct? {ctx.author.display_name} (👍🏻/👎🏻)",
-            icon_url=ctx.author.display_avatar.url,
-        )
-        ans_msg = await ctx.channel.send(embed=answer)
-        await ans_msg.add_reaction("👍🏻")
-        await ans_msg.add_reaction("👎🏻")
-
-        def check(react: disnake.Reaction, user: disnake.User):
-            if (
-                user == ctx.author
-                and react.message.id == ans_msg.id
-                and (react.emoji in ["👍🏻", "👎🏻"])
-            ):
-                return True
-            return False
-
-        try:
-            reaction, user = await self.bot.wait_for(
-                "reaction_add", check=check, timeout=30
-            )
-        except asyncio.TimeoutError:
-            await ctx.send(
-                embed=disnake.Embed(description="You took too long to respond!")
-            )
-            await ctx.send(embed=bye)
-            return
-        if ans_emoji[str(reaction.emoji)] == "yes":
-            yes = disnake.Embed(
-                title="Akinator",
-                description="I did this again...\🫣",
-                color=disnake.Colour.blue(),
-            )
-            yes.set_thumbnail(
-                url="https://i.pinimg.com/originals/ae/aa/d7/aeaad720bd3c42b095c9a6788ac2df9a.png"
-            )
-            yes.set_author(
-                name=self.bot.user.display_name,
-                icon_url=f"{self.bot.user.avatar.url}",
-            )
-            yes.set_footer(
-                text=f"Requested by {ctx.author.display_name}",
-                icon_url=ctx.author.display_avatar.url,
-            )
-            await ctx.channel.send(embed=yes)
-        elif ans_emoji[str(reaction.emoji)] == "no":
-            no = disnake.Embed(
-                title="Akinator",
-                description="Oops! I just missed \😢",
-                color=disnake.Colour.blue(),
-            )
-            no.set_thumbnail(
-                url="https://i.pinimg.com/originals/0a/8c/12/0a8c1218eeaadf5cfe90140e32558e64.png"
-            )
-            no.set_author(
-                name=self.bot.user.display_name,
-                icon_url=f"{self.bot.user.avatar.url}",
-            )
-            no.set_footer(
-                text=f"Requested by {ctx.author.display_name}",
-                icon_url=ctx.author.display_avatar.url,
-            )
-            await ctx.channel.send(embed=no)
-        await ctx.send(embed=bye)
+        await AkinatorGame(self.bot, ctx)
 
     @commands.guild_only()
     @commands.cooldown(1, 20, commands.BucketType.user)

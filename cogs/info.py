@@ -3,15 +3,14 @@ import disnake
 from disnake.ext import commands
 from disnake.ext.commands.params import Param
 import requests
-from bot import Bot
 import json
 import datetime as dt
 
-deleted_msg = {}
+from utils.information import *
+from bot import Bot
 
 
 class Info(commands.Cog):
-
     """
     Get some useful information from the Internet
     """
@@ -31,87 +30,12 @@ class Info(commands.Cog):
         await ctx.response.defer()
         req = requests.get(
             f"https://superheroapi.com/api/{self.bot.config.api_keys['superhero_api']}/search/{name}",
-            verify=False
+            verify=False,
         )
         data = json.loads(req.text)
         if data["response"] == "success":
-            for result in data["results"]:
-                chara_name = result["name"]
-                chara_id = result["id"]
-                intelli = result["powerstats"]["intelligence"]
-                strength = result["powerstats"]["strength"]
-                speed = result["powerstats"]["speed"]
-                durability = result["powerstats"]["durability"]
-                power = result["powerstats"]["power"]
-                combat = result["powerstats"]["combat"]
-                f_name = result["biography"]["full-name"]
-                ego = result["biography"]["alter-egos"]
-                aliases = ", ".join(result["biography"]["aliases"])
-                pob = result["biography"]["place-of-birth"]
-                f_appear = result["biography"]["first-appearance"]
-                pub = result["biography"]["full-name"]
-                align = result["biography"]["alignment"]
-                gender = result["appearance"]["gender"]
-                race = result["appearance"]["race"]
-                height = (
-                    result["appearance"]["height"][0]
-                    + " or "
-                    + data["results"][0]["appearance"]["height"][1]
-                )
-                weight = (
-                    result["appearance"]["weight"][0]
-                    + " or "
-                    + data["results"][0]["appearance"]["weight"][1]
-                )
-                eye = result["appearance"]["eye-color"]
-                hair = result["appearance"]["hair-color"]
-                occu = result["work"]["occupation"]
-                base = result["work"]["base"]
-                grp = result["connections"]["group-affiliation"]
-                relate = result["connections"]["relatives"]
-                img = result["image"]["url"]
-
-                embed = disnake.Embed(
-                    title=chara_id + " " + chara_name,
-                    description="Detailed information of your character is as follows -",
-                    color=53759,
-                    timestamp=dt.datetime.now(dt.timezone.utc),
-                )
-                embed.add_field(
-                    name="Powerstats",
-                    value=f"`Intelligence` {intelli}\n`Strength` {strength}\n`Speed`{speed}\n`Durability` {durability}\n`Power` {power}\n`Combat` {combat}",
-                    inline=True,
-                )
-                embed.add_field(
-                    name="Appearance",
-                    value=f"`Gender` {gender}\n`Race` {race}\n`Height` {height}\n`Weight` {weight}\n`Eye-Color` {eye}\n`Hair-Color` {hair}",
-                    inline=True,
-                )
-                embed.add_field(
-                    name="Biography",
-                    value=f"`Full Name` {f_name}\n`Alter-Egos` {ego}\n`Aliases` {aliases}\n`Place of Birth` {pob}\n`First Appearance` {f_appear}\n`Publisher` {pub}\n`Alignment` {align}",
-                    inline=False,
-                )
-                embed.add_field(
-                    name="Work",
-                    value=f"`Occupation` {occu}\n`Base` {base}",
-                    inline=False,
-                )
-                embed.add_field(
-                    name="Connections",
-                    value=f"`Group Affiliations` {grp}\n`Relations` {relate}",
-                    inline=False,
-                )
-                embed.set_thumbnail(url=img)
-                embed.set_author(
-                    name=self.bot.user.display_name,
-                    icon_url=f"{self.bot.user.avatar.url}",
-                )
-                embed.set_footer(
-                    text=f"Requested by {ctx.author.display_name}",
-                    icon_url=ctx.author.display_avatar.url,
-                )
-                await ctx.send(embed=embed)
+            embed = SuperheroInformation(data, ctx)
+            await ctx.send(embed=embed)
 
         else:
             embed = disnake.Embed(
@@ -119,7 +43,6 @@ class Info(commands.Cog):
                 colour=1199267,
             )
             await ctx.send(embed=embed, delete_after=5)
-
 
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
@@ -221,26 +144,28 @@ class Info(commands.Cog):
 
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.slash_command(description="Translate anything to any language")
+    @commands.slash_command(
+        name="info-translate", description="Translate anything to any language"
+    )
     async def translate(
         self,
         ctx: disnake.AppCmdInter,
-        language=Param(description="Language to translate in"),
-        input=Param(description="Text to translate"),
+        language:str=Param(description="Language to translate in"),
+        text:str=Param(description="Text to translate", choices=Languages),
     ):
         await ctx.response.defer()
         req = requests.get(
-            f"https://api.popcat.xyz/translate?to={language}&text={input}"
+            f"https://api.popcat.xyz/translate?to={language}&text={text}"
         )
         data = (json.loads(req.text))["translated"]
         embed = disnake.Embed()
-        embed.add_field("Text", input)
+        embed.add_field("Text", text)
         embed.add_field("Translation", data)
         await ctx.send(embed=embed)
 
     @commands.guild_only()
     @commands.cooldown(1, 20, commands.BucketType.user)
-    @commands.slash_command(description="Get a fact")
+    @commands.slash_command(name="info-fact", description="Get a fact")
     async def fact(self, ctx: disnake.AppCmdInter):
         await ctx.response.defer()
         req = requests.get("https://api.popcat.xyz/fact")
@@ -249,7 +174,7 @@ class Info(commands.Cog):
 
     @commands.guild_only()
     @commands.cooldown(1, 15, commands.BucketType.user)
-    @commands.slash_command(description="Get a joke")
+    @commands.slash_command(name="info-joke", description="Get a joke")
     async def joke(self, ctx: disnake.AppCmdInter):
         await ctx.response.defer()
         req = requests.get("https://api.popcat.xyz/joke")
@@ -257,41 +182,12 @@ class Info(commands.Cog):
         await ctx.send(embed=disnake.Embed(description=data))
 
     @commands.guild_only()
-    @commands.cooldown(1, 15, commands.BucketType.user)
-    @commands.slash_command(description="Snipe recently deleted messages channel-wise.")
-    async def snipe(
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    @commands.slash_command(name="info-avatar", description="Get avatar of a user")
+    async def avatar(
         self,
         ctx: disnake.AppCmdInter,
-        channel: disnake.TextChannel = Param(None, description="Channel to check in"),
-    ):
-        await ctx.response.defer()
-        if channel is None:
-            channel = ctx.channel
-        try:
-            msg = deleted_msg[channel.id]
-            if not len(msg[1]) == 0:
-                embed = self.bot.Embed(self.bot, ctx, "Requested")
-                embed.title = "Last Message"
-                embed.description = f"`Author` - {msg[0].mention}\n`Channel` - {channel.mention}\n`Time` - {msg[2]}\n\n```{msg[1]}```"
-                await ctx.send(embed=embed)
-            else:
-                await ctx.send(
-                    embed=disnake.Embed(
-                        description="No recently deleted message, might be a media or an embed."
-                    ),
-                    delete_after=4,
-                )
-        except KeyError:
-            await ctx.send(
-                embed=disnake.Embed(description="No recently deleted message."),
-                delete_after=4,
-            )
-
-    @commands.guild_only()
-    @commands.cooldown(1, 30, commands.BucketType.user)
-    @commands.slash_command(description="Get avatar of a user")
-    async def avatar(
-        self, ctx: disnake.AppCmdInter, member: disnake.Member = Param(None, description = "whose avatar?")
+        member: disnake.Member = Param(None, description="whose avatar?"),
     ):
         await ctx.response.defer()
         if member is None:
@@ -346,15 +242,6 @@ class Info(commands.Cog):
             pass
         embed.color = int(User.color)
         await ctx.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_message_delete(self, ctx):
-        global deleted_msg
-        deleted_msg[ctx.channel.id] = (
-            ctx.author,
-            ctx.content,
-            ctx.created_at.strftime("%d %B, %Y, %H:%M:%S"),
-        )
 
 
 def setup(bot):
