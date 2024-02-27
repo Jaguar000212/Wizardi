@@ -1,9 +1,9 @@
 from disnake.ext import commands
 from disnake.ext.commands.params import Param
 import disnake
-import datetime as dt
-from bot import Bot
 from typing import Union
+
+from bot import Bot
 
 
 class Moderator(commands.Cog):
@@ -28,14 +28,39 @@ class Moderator(commands.Cog):
         member: disnake.Member = Param(
             None, description="Member whose messages to be purged"
         ),
+        role: disnake.Role = Param(
+            None, description="Role whose messages to be purged"
+        ),
     ):
-        if not member is None:
+        """
+        Purge messages from a channel.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - amount (int): Number of messages to be purged (default: 10).
+        - member (disnake.Member): Member whose messages to be purged (default: None).
+        - role (disnake.Role): Role whose messages to be purged (default: None).
+        """
+        specify = ""
+        if not role is None and not member is None:
+            specify = f"{role.mention} & {member.mention}"
+
+            def check(msg):
+                return role in msg.author.roles or msg.author == member
+
+        if not member is None and role is None:
             specify = f"{member.mention}"
 
             def check(msg):
                 return msg.author == member
 
-        else:
+        if not role is None and member is None:
+            specify = f"{role.mention}"
+
+            def check(msg):
+                return role in msg.author.roles
+
+        if member is None and role is None:
             specify = f"{ctx.guild.default_role.mention}"
 
             def check(msg):
@@ -43,15 +68,12 @@ class Moderator(commands.Cog):
 
         purged = await ctx.channel.purge(limit=amount, check=check)
 
-        embed = disnake.Embed(
-            title="Purged",
-            description=f"{self.bot.icons['passed']} Purged {len(purged)} messages by {specify}",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
+        embed = self.bot.Embed(self.bot, ctx, "Purged")
+        embed.title = "Purged"
+        embed.description = (
+            f"{self.bot.icons['passed']} Purged {len(purged)} messages by {specify}"
         )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
@@ -69,6 +91,13 @@ class Moderator(commands.Cog):
         ctx: disnake.AppCmdInter,
         channel: disnake.TextChannel = Param(None, description="Channel to be nuked"),
     ):
+        """
+        Nuke a channel.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - channel (disnake.TextChannel): Channel to be nuked (default: None).
+        """
         await ctx.response.defer()
         if channel is None:
             channel = ctx.channel
@@ -76,14 +105,16 @@ class Moderator(commands.Cog):
         embed = self.bot.Embed(self.bot, ctx, "Nuked")
         embed.title = "Nuked"
         embed.description = "This channel has been nuked"
-        embed.timestamp = dt.datetime.now(dt.timezone.utc)
         new_channel = await channel.clone(reason="Has been Nuked!")
-        await new_channel.move(beginning = True, offset = position)
+        await new_channel.move(beginning=True, offset=position)
         await channel.delete()
         await new_channel.send(embed=embed)
         try:
+            embed = self.bot.Embed(self.bot, ctx, "Nuked")
+            embed.title = "Nuked"
+            embed.description = f"{new_channel.mention} channel has been nuked"
             await ctx.send(
-                embed=disnake.Embed(description=f"Nuked {new_channel.mention} sucessfully!"),
+                embed=embed,
                 delete_after=4,
             )
         except:
@@ -103,6 +134,15 @@ class Moderator(commands.Cog):
         member: disnake.Member = Param(None, description="Member to lock for"),
         role: disnake.Role = Param(None, description="Role to lock for"),
     ):
+        """
+        Lock a channel.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - channel (Union[disnake.CategoryChannel, disnake.VoiceChannel, disnake.TextChannel]): Channel to lock (default: None).
+        - member (disnake.Member): Member to lock for (default: None).
+        - role (disnake.Role): Role to lock for (default: None).
+        """
         await ctx.response.defer()
         if channel is None:
             channel = ctx.channel
@@ -121,15 +161,12 @@ class Moderator(commands.Cog):
                 specific += f"{role.mention} "
                 await channel.set_permissions(role, send_messages=False)
 
-        embed = disnake.Embed(
-            title="Locked!",
-            description=f"{self.bot.icons['lock']} {channel.mention} is now locked for {specific}.",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
+        embed = self.bot.Embed(self.bot, ctx, "Locked")
+        self.title = "Locked!"
+        self.description = (
+            f"{self.bot.icons['lock']} {channel.mention} is now locked for {specific}."
         )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+        self.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
@@ -150,6 +187,15 @@ class Moderator(commands.Cog):
         member: disnake.Member = Param(None, description="Member to lock for"),
         role: disnake.Role = Param(None, description="Role to lock for"),
     ):
+        """
+        Unlock a channel.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - channel (Union[disnake.CategoryChannel, disnake.VoiceChannel, disnake.TextChannel]): Channel to lock (default: None).
+        - member (disnake.Member): Member to lock for (default: None).
+        - role (disnake.Role): Role to lock for (default: None).
+        """
         await ctx.response.defer()
         if channel is None:
             channel = ctx.channel
@@ -165,15 +211,10 @@ class Moderator(commands.Cog):
             if role:
                 specific += f"{role.mention} "
                 await channel.set_permissions(role, send_messages=True)
-        embed = disnake.Embed(
-            title="Unocked!",
-            description=f"{self.bot.icons['unlock']} {channel.mention} is now unlocked for {specific}.",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+        embed = self.bot.Embed(self.bot, ctx, "Unlocked")
+        embed.title = "Unocked!"
+        embed.description = f"{self.bot.icons['unlock']} {channel.mention} is now unlocked for {specific}."
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
@@ -194,6 +235,15 @@ class Moderator(commands.Cog):
         member: disnake.Member = Param(None, description="Member to unlock for"),
         role: disnake.Role = Param(None, description="Role to unlock for"),
     ):
+        """
+        Hide a channel.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - channel (Union[disnake.CategoryChannel, disnake.VoiceChannel, disnake.TextChannel]): Channel to hide (default: None).
+        - member (disnake.Member): Member to unlock for (default: None).
+        - role (disnake.Role): Role to unlock for (default: None).
+        """
         await ctx.response.defer()
 
         if channel is None:
@@ -204,9 +254,7 @@ class Moderator(commands.Cog):
 
         if member is None and role is None:
             specific = f"{ctx.guild.default_role.mention}"
-            await channel.set_permissions(
-                ctx.guild.default_role, view_channel=False
-            )
+            await channel.set_permissions(ctx.guild.default_role, view_channel=False)
         else:
             specific = ""
             if member:
@@ -216,15 +264,10 @@ class Moderator(commands.Cog):
                 specific += f"{role.mention} "
                 await channel.set_permissions(role, view_channel=False)
 
-        embed = disnake.Embed(
-            title="Hidden!",
-            description=f"{channel.mention} is now hidden for {specific}.",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+        embed = self.bot.Embed(self.bot, ctx, "Hidden")
+        embed.title = "Hidden!"
+        embed.description = f"{channel.mention} is now hidden for {specific}."
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
@@ -245,6 +288,15 @@ class Moderator(commands.Cog):
         member: disnake.Member = Param(None, description="Member to unlock for"),
         role: disnake.Role = Param(None, description="Role to unlock for"),
     ):
+        """
+        Show a channel.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - channel (Union[disnake.CategoryChannel, disnake.VoiceChannel, disnake.TextChannel]): Channel to show (default: None).
+        - member (disnake.Member): Member to unlock for (default: None).
+        - role (disnake.Role): Role to unlock for (default: None).
+        """
         await ctx.response.defer()
 
         if channel is None:
@@ -261,15 +313,11 @@ class Moderator(commands.Cog):
             if role:
                 specific += f"{role.mention} "
                 await channel.set_permissions(role, view_channel=True)
-        embed = disnake.Embed(
-            title="Visible!",
-            description=f"{channel.mention} is now visible for {specific}.",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+
+        embed = self.bot.Embed(self.bot, ctx, "Visible")
+        embed.title = "Visible!"
+        embed.description = f"{channel.mention} is now visible for {specific}."
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
@@ -285,29 +333,32 @@ class Moderator(commands.Cog):
         self,
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="Member to kick"),
-        reason=Param("Not specified", description="Reason for kick"),
+        reason: str = Param("Not specified", description="Reason for kick"),
     ):
+        """
+        Kicks a member from the server.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.Member): The member to be kicked.
+        - reason (str): The reason for the kick. Default is "Not specified".
+        """
         await ctx.response.defer()
-        embed = disnake.Embed(
-            title="Kicked!",
-            description=f"{self.bot.icons['moderator']} Kicked `{member}` with reason **{reason}**",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
+        embed = self.bot.Embed(self.bot, ctx, "Kicked")
+        embed.title = "Kicked!"
+        embed.description = (
+            f"{self.bot.icons['moderator']} Kicked `{member}` with reason **{reason}**"
         )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
         )
 
-        embed_dm = disnake.Embed(
-            title="Kicked!",
-            description=f"You have been kicked from `{ctx.guild.name}` for **{reason}**",
-        )
-        embed_dm.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
+        embed_dm = self.bot.Embed(self.bot, ctx, "Kicked")
+        embed_dm.title = ("Kicked!",)
+        embed_dmdescription = (
+            f"You have been kicked from `{ctx.guild.name}` for **{reason}**",
         )
         embed_dm.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
@@ -337,30 +388,36 @@ class Moderator(commands.Cog):
         self,
         ctx: disnake.AppCmdInter,
         member: disnake.User = Param(description="Member to ban"),
-        reason=Param("Not specified!", description="Reason for ban"),
+        reason: str = Param("Not specified!", description="Reason for ban"),
     ):
+        """
+        Bans a member from the server.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.User): The member to ban.
+        - reason (str): The reason for the ban. Default is "Not specified!".
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
 
-        embed = disnake.Embed(
-            title="Banned!",
-            description=f"{self.bot.icons['moderator']} Banned `{member}` with reason **{reason}**",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
+        embed = self.bot.Embed(self.bot, ctx, "Banned")
+        embed.title = "Banned!"
+        embed.description = (
+            f"{self.bot.icons['moderator']} Banned `{member}` with reason **{reason}**"
         )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
         )
 
-        embed_dm = disnake.Embed(
-            title="Banned!",
-            description=f"You have been banned from `{ctx.guild.name}` for **{reason}**",
-        )
-        embed_dm.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
+        embed_dm = self.bot.Embed(self.bot, ctx, "Banned")
+        embed_dm.title = ("Banned!",)
+        embed_dm.description = (
+            f"You have been banned from `{ctx.guild.name}` for **{reason}**",
         )
         embed_dm.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
@@ -388,29 +445,33 @@ class Moderator(commands.Cog):
         self,
         ctx: disnake.AppCmdInter,
         member: disnake.User = Param(description="User to unban"),
-        reason=Param("Not specified!", description="Reason for unban"),
+        reason: str = Param("Not specified!", description="Reason for unban"),
     ):
+        """
+        Unbans a user from the server.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.User): The user to unban.
+        - reason (str): The reason for the unban. Defaults to "Not specified!".
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
-        embed = disnake.Embed(
-            title="Ban Revoked!",
-            description=f"{self.bot.icons['moderator']} Unbanned `{member}` with reason **{reason}**",
-            colour=53759,
-            timestamp=dt.datetime.now(dt.timezone.utc),
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
+        embed = self.bot.Embed(self.bot, ctx, "Unbanned")
+        embed.title = "Ban Revoked!"
+        embed.description = f"{self.bot.icons['moderator']} Unbanned `{member}` with reason **{reason}**"
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
         )
 
-        embed_dm = disnake.Embed(
-            title="Ban Revoked!",
-            description=f"You have been unbanned from `{ctx.guild.name}` for **{reason}**",
-        )
-        embed_dm.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
+        embed_dm = self.bot.Embed(self.bot, ctx, "Unbanned")
+        embed_dm.title = "Ban Revoked!"
+        embed_dm.description = (
+            f"You have been unbanned from `{ctx.guild.name}` for **{reason}**"
         )
         embed_dm.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
@@ -434,54 +495,57 @@ class Moderator(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="User to mute"),
         until: int = Param(description="For minutes to mute"),
-        reason="Not specified",
+        reason: str = Param("Not specified!", description="Reason for timeout"),
     ):
+        """
+        Timeout a member for a specified duration.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.Member): The member to be timed out.
+        - until (int): The duration of the timeout in minutes.
+        - reason (str): The reason for the timeout.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         await member.timeout(duration=(until * 60), reason=reason)
         if until != 0:
-            embed = disnake.Embed(
-                title="Timed-out!",
-                description=f"{self.bot.icons['moderator']} Timed-out `{member}` with reason **{reason}** until {until} minute(s).",
-                colour=53759,
-                timestamp=dt.datetime.now(dt.timezone.utc),
-            )
+            embed = self.bot.Embed(self.bot, ctx, "Timed-out!")
+            embed.title = ("Timed-out!",)
+            embed.description = f"{self.bot.icons['moderator']} Timed-out `{member}` with reason **{reason}** until {until} minute(s)."
+            embed.colour = 53759
 
-            embed_dm = disnake.Embed(
-            title="Timed-out!",
-            description=f"You have been timed-out in `{ctx.guild.name}` for **{reason}**",
+            embed_dm = self.bot.Embed(self.bot, ctx, "Timed-out!")
+            embed_dm.title = "Timed-out!"
+            embed_dm.description = (
+                f"You have been timed-out in `{ctx.guild.name}` for **{reason}**"
             )
         else:
-            embed = disnake.Embed(
-                title="Time-out Removed!",
-                description=f"{self.bot.icons['moderator']} Time-out removed for `{member}` with reason **{reason}**.",
-                colour=53759,
-                timestamp=dt.datetime.now(dt.timezone.utc),
-            )
+            embed = self.bot.Embed(self.bot, ctx, "Timed-out Removed!")
+            embed.title = "Time-out Removed!"
+            embed.description = f"{self.bot.icons['moderator']} Time-out removed for `{member}` with reason **{reason}**."
+            embed.colour = 53759
 
-            embed_dm = disnake.Embed(
-            title="Timed-out!",
-            description=f"Your time-out has been removed in `{ctx.guild.name}` for **{reason}**.",
-            timestamp=dt.datetime.now(dt.timezone.utc),
-            )
+            embed_dm = self.bot.Embed(self.bot, ctx, "Time-out Removed!")
+            embed_dm.title = "Timed-out Removed!"
+            embed_dm.description = f"Your time-out has been removed in `{ctx.guild.name}` for **{reason}**."
 
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
         )
 
-        embed_dm.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
         embed_dm.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
         )
         if member == ctx.author:
             await ctx.send(
-                embed=disnake.Embed(description=f"{self.bot.icons['failed']} Cannot time out yourselves."),
+                embed=disnake.Embed(
+                    description=f"{self.bot.icons['failed']} Cannot time out yourselves."
+                ),
                 delete_after=3,
             )
         else:
@@ -493,7 +557,7 @@ class Moderator(commands.Cog):
 
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.guild)
-    @commands.slash_command(name = "mod-poll", description="Create a poll")
+    @commands.slash_command(name="mod-poll", description="Create a poll")
     @commands.has_permissions(manage_guild=True)
     async def poll(
         self,
@@ -501,6 +565,17 @@ class Moderator(commands.Cog):
         question=Param(description="Question of poll"),
         options: str = Param(description="Poll options"),
     ):
+        """
+        Create a poll.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - question (str): The question of the poll.
+        - options (str): The options for the poll.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         options = options.split(",")
         if len(options) <= 1:
@@ -525,16 +600,15 @@ class Moderator(commands.Cog):
         ):
             reactions = [f"{self.bot.icons['like']}", f"{self.bot.icons['dislike']}"]
         else:
-            reactions = ["1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "🔟"]
+            reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"]
         description = []
         for x, option in enumerate(options):
             description += f"\n{reactions[x]} {option}\n"
-        embed = disnake.Embed(
-            title=question,
-            description="".join(description),
-            color=disnake.Colour.random(),
-        )
-        embed.set_footer(text=f"Poll by {ctx.author.name}")
+        embed = self.bot.Embed(self.bot, ctx, "Poll")
+        embed.title = question
+        embed.description = "".join(description)
+        embed.color = disnake.Colour.random()
+
         await ctx.send(embed=embed)
         msg = await ctx.original_message()
         for reaction in reactions[: len(options)]:

@@ -4,11 +4,27 @@ import datetime as dt
 
 
 class Listeners(commands.Cog):
+    """
+    A class representing a cog for event listeners in a Discord bot.
+    """
+
     def __init__(self, bot):
+        """
+        Initializes the Listeners cog.
+
+        Parameters:
+        - bot (commands.Bot): The Discord bot instance.
+        """
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
+        """
+        Event listener for when the bot joins a guild.
+
+        Parameters:
+        - guild (disnake.Guild): The guild the bot joined.
+        """
         try:
             await self.bot.database.Configs.insert_one(
                 {"_id": str(guild.id), "LogChannel": None}
@@ -43,6 +59,12 @@ class Listeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
+        """
+        Event listener for when the bot leaves a guild.
+
+        Parameters:
+        - guild (disnake.Guild): The guild the bot left.
+        """
         try:
             await self.bot.database.Configs.delete_one({"_id": str(guild.id)})
         except Exception as e:

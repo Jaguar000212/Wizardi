@@ -78,7 +78,6 @@ class Fun(commands.Cog):
         self,
         ctx: disnake.AppCmdInter,
         user: disnake.Member = Param(None, description="Member to celebrate with"),
-        *,
         reason: str = Param(None, description="Reason for celebration"),
     ):
         """
@@ -176,6 +175,16 @@ class Fun(commands.Cog):
         ctx: disnake.AppCmdInter,
         player: disnake.Member = Param(description="Member to play with"),
     ):
+        """
+        Play a game of Tic-Tac-Toe with another member.
+
+        Parameters:
+        - ctx: The context of the command.
+        - player: The member to play with.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         if player.bot:
             await ctx.send(
@@ -207,6 +216,16 @@ class Fun(commands.Cog):
         ctx=Param(),
         player: disnake.Member = Param(None, description="Member to play with"),
     ):
+        """
+        Play a game of Rock-Paper-Scissors with another member.
+
+        Parameters:
+        - ctx: The context of the command invocation.
+        - player: The member to play with. If not provided, the bot will play against the command invoker.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         if player is None:
             player = self.bot.user
@@ -238,6 +257,15 @@ class Fun(commands.Cog):
         name="game-minesweeper", description="Play minesweeper mini-game."
     )
     async def mine(self, ctx):
+        """
+        Play a minesweeper mini-game.
+
+        Parameters:
+        - ctx: The context of the command.
+
+        Returns:
+        None
+        """
         board = [["\u200b"] * 5] * 5  # 5x5 buttoned rows
         bombs = 0
         bombpositions = []

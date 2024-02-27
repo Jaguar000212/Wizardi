@@ -3,6 +3,17 @@ from typing import List
 
 
 class TicTacToeButton(disnake.ui.Button["TicTacToe"]):
+    """
+    Represents a button used in a Tic-Tac-Toe game.
+
+    Attributes:
+        x (int): The x-coordinate of the button.
+        y (int): The y-coordinate of the button.
+
+    Methods:
+        callback(interaction): Handles the button callback event.
+    """
+
     def __init__(self, x: int, y: int):
 
         super().__init__(style=disnake.ButtonStyle.secondary, label="\u200b", row=y)
@@ -10,6 +21,15 @@ class TicTacToeButton(disnake.ui.Button["TicTacToe"]):
         self.y = y
 
     async def callback(self, interaction: disnake.Interaction):
+        """
+        Callback method for handling Tic-Tac-Toe game interactions.
+
+        Parameters:
+        - interaction (disnake.Interaction): The interaction object representing the user's interaction with the game.
+
+        Returns:
+        - None
+        """
         await interaction.response.defer()
         embed = disnake.Embed()
         embed.set_author(
@@ -81,6 +101,22 @@ class TicTacToeButton(disnake.ui.Button["TicTacToe"]):
 
 
 class TicTacToe(disnake.ui.View):
+    """
+    Represents a Tic-Tac-Toe game.
+
+    Attributes:
+        player1 (disnake.Member): The first player.
+        player2 (disnake.Member): The second player.
+        current_player (int): The current player's turn.
+        board (List[List[int]]): The game board.
+        children (List[TicTacToeButton]): The buttons used in the game.
+        X (int): The value representing player X.
+        O (int): The value representing player O.
+        Tie (int): The value representing a tie game.
+
+    Methods:
+        check_board_winner(): Checks the game board for a winner.
+    """
 
     children: List[TicTacToeButton]
     X = -1
@@ -103,6 +139,12 @@ class TicTacToe(disnake.ui.View):
                 self.add_item(TicTacToeButton(x, y))
 
     def check_board_winner(self):
+        """
+        Checks the game board for a winner.
+
+        Returns:
+        int: The winner of the game, or None if there is no winner.
+        """
         for across in self.board:
             value = sum(across)
             if value == 3:

@@ -10,17 +10,24 @@ from bot import Bot
 
 
 class Help(commands.Cog):
-    """For this simple help!"""
+    """Provides help commands for the bot."""
 
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.slash_command(description="For your simple help")
+    @commands.slash_command(description="Displays help information.")
     async def help(
         self,
         ctx: disnake.AppCmdInter,
-        name=Param(None, description="Command or module"),
+        name: str = Param(None, description="Command or module"),
     ):
+        """
+        Displays help information.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The interaction context.
+        - name (str, optional): The name of the command or module to get help for. Defaults to None.
+        """
         await ctx.response.defer()
         input = name
         if input is None:
@@ -84,14 +91,14 @@ class Help(commands.Cog):
                             for command in cogs.get_slash_commands():
                                 embed.add_field(
                                     name=f"**{command.name}**",
-                                    value=f"DESCRIPTION - {command.description}",
+                                    value=f"> {command.description}",
                                     inline=False,
                                 )
                     else:
                         for command in cogs.get_slash_commands():
                             embed.add_field(
                                 name=f"**{command.name}**",
-                                value=f"DESCRIPTION - {command.description}",
+                                value=f"> {command.description}",
                                 inline=False,
                             )
                     await ctx.edit_original_message(embed=embed)
@@ -126,14 +133,14 @@ class Help(commands.Cog):
                     for command in cogs.get_slash_commands():
                         embed.add_field(
                             name=f"**/{command.body.name}**",
-                            value=f"DESCRIPTION - {command.body.description}",
+                            value=f"> {command.body.description}",
                             inline=False,
                         )
                 else:
                     for command in cogs.get_slash_commands():
                         embed.add_field(
                             name=f"**/{command.body.name}**",
-                            value=f"DESCRIPTION - {command.body.description}",
+                            value=f"> {command.body.description}",
                             inline=False,
                         )
                 await ctx.send(embed=embed)
@@ -182,6 +189,12 @@ class Help(commands.Cog):
         name="info-bot", description="Shows information about the bot."
     )
     async def about(self, interaction: disnake.ApplicationCommandInteraction):
+        """
+        Shows information about the bot.
+
+        Parameters:
+        - interaction (disnake.ApplicationCommandInteraction): The interaction context.
+        """
         await interaction.response.defer()
         owner = await self.bot.fetch_user(self.bot.owned)
         t_members = []

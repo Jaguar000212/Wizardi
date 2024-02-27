@@ -5,6 +5,15 @@ from bot import Bot
 
 
 class RPS(disnake.ui.View):
+    """
+    A Rock-Paper-Scissors game view for Discord bots.
+
+    Parameters:
+    - bot (Bot): The Discord bot instance.
+    - challenger (disnake.Member): The member who initiated the challenge.
+    - opponent (disnake.Member): The member who accepted the challenge.
+    """
+
     def __init__(self, bot: Bot, challenger: disnake.Member, opponent: disnake.Member):
         super().__init__(timeout=30)
         self.bot = bot
@@ -17,6 +26,17 @@ class RPS(disnake.ui.View):
 
     @disnake.ui.button(label="Rock", emoji="🪨")
     async def rock(self, button: disnake.ui.Button, interaction: disnake.Interaction):
+        """
+        Plays the 'rock' move in the Rock-Paper-Scissors game.
+
+        Args:
+            button (disnake.ui.Button): The button that triggered the interaction.
+            interaction (disnake.Interaction): The interaction object representing the user's interaction.
+
+        Returns:
+            None
+        """
+
         embed = self.bot.Embed(interaction.bot, interaction, "Challenged")
         embed.title = "Rock-Paper-Scissors"
         if self.challenger.avatar is None:
@@ -52,6 +72,16 @@ class RPS(disnake.ui.View):
 
     @disnake.ui.button(label="Paper", emoji="🧻")
     async def paper(self, button, interaction):
+        """
+        Plays the 'paper' move in the Rock-Paper-Scissors game.
+
+        Args:
+            button (disnake.ui.Button): The button that triggered the interaction.
+            interaction (disnake.Interaction): The interaction object representing the user's interaction.
+
+        Returns:
+            None
+        """
         embed = self.bot.Embed(interaction.bot, interaction, "Challenged")
         embed.title = "Rock-Paper-Scissors"
         embed.description = f"`Challenger` - {self.challenger.mention}\n`Opponent` - {self.opponent.mention}"
@@ -88,6 +118,16 @@ class RPS(disnake.ui.View):
 
     @disnake.ui.button(label="Scissors", emoji="✂️")
     async def scissors(self, button, interaction):
+        """
+        Plays the 'scissors' move in the Rock-Paper-Scissors game.
+
+        Args:
+            button (disnake.ui.Button): The button that triggered the interaction.
+            interaction (disnake.Interaction): The interaction object representing the user's interaction.
+
+        Returns:
+            None
+        """
         embed = self.bot.Embed(interaction.bot, interaction, "Challenged")
         embed.title = "Rock-Paper-Scissors"
         embed.description = f"`Challenger` - {self.challenger.mention}\n`Opponent` - {self.opponent.mention}"
@@ -123,6 +163,12 @@ class RPS(disnake.ui.View):
         await interaction.edit_original_message(embed=embed)
 
     def winner(self):
+        """
+        Determines the winner of the Rock-Paper-Scissors game.
+
+        Returns:
+        tuple: The winner of the game and their move.
+        """
         if self.challengerOP == self.opponentOP:
             return False
         elif self.challengerOP == "Rock":

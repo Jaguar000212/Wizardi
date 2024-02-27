@@ -4,6 +4,15 @@ import asyncio
 
 
 def slotGame(ctx: disnake.AppCmdInter):
+    """
+    Play a slot game.
+
+    Args:
+        ctx (disnake.AppCmdInter): The context of the command.
+
+    Returns:
+        None
+    """
     embed = disnake.Embed()
     emojis = "🍎🍊🍐🍋🍉🍇🍓🍒🍈🍌🍍🥭🍏🍑🥝🥑"
     a, b, c = [choice(emojis) for g in range(3)]
@@ -20,7 +29,21 @@ def slotGame(ctx: disnake.AppCmdInter):
         embed.colour = disnake.Colour.red()
 
 
-async def beerOffer(bot, user: disnake.Member, ctx: disnake.AppCmdInter, reason: str = None):
+async def beerOffer(
+    bot, user: disnake.Member, ctx: disnake.AppCmdInter, reason: str = None
+):
+    """
+    Offer a beer to a user.
+
+    Args:
+        bot: The Discord bot instance.
+        user (disnake.Member): The user to offer the beer to.
+        ctx (disnake.AppCmdInter): The context of the command.
+        reason (str, optional): The reason for offering the beer. Defaults to None.
+
+    Returns:
+        None
+    """
     if not user or user.id == ctx.author.id:
         return await ctx.send(
             embed=disnake.Embed(

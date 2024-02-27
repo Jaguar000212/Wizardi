@@ -4,6 +4,28 @@ from utils.helpers import BotInformation
 
 
 class BotInformationView(disnake.ui.View):
+    """
+    A custom view class for displaying bot information and actions.
+
+    Args:
+        interaction (disnake.ApplicationCommandInteraction): The interaction object representing the user's interaction with the bot.
+        bot: The bot instance.
+
+    Attributes:
+        interaction (disnake.ApplicationCommandInteraction): The interaction object representing the user's interaction with the bot.
+        bot: The bot instance.
+        BotInformation (BotInformation): An instance of the BotInformation class.
+        is_message_deleted (bool): Flag indicating whether the original message has been deleted.
+
+    Methods:
+        home: Button handler for the "Home" button.
+        latency: Button handler for the "Latency" button.
+        uptime: Button handler for the "Uptime" button.
+        Commands: Button handler for the "Commands" button.
+        quit: Button handler for the "Quit" button.
+        on_timeout: Handler for when the view times out.
+    """
+
     def __init__(self, interaction: disnake.ApplicationCommandInteraction, bot):
         super().__init__(timeout=30)
         self.interaction = interaction
@@ -31,6 +53,13 @@ class BotInformationView(disnake.ui.View):
     async def home(
         self, button: disnake.ui.Button, interaction: disnake.AppCommandInteraction
     ):
+        """
+        Button handler for the "Home" button.
+
+        Args:
+            button (disnake.ui.Button): The button that was clicked.
+            interaction (disnake.AppCommandInteraction): The interaction object representing the user's interaction with the bot.
+        """
         try:
             await interaction.response.defer()
         except disnake.errors.NotFound:
@@ -46,6 +75,13 @@ class BotInformationView(disnake.ui.View):
         button: disnake.ui.Button,
         interaction: disnake.ApplicationCommandInteraction,
     ):
+        """
+        Button handler for the "Latency" button.
+
+        Args:
+            button (disnake.ui.Button): The button that was clicked.
+            interaction (disnake.ApplicationCommandInteraction): The interaction object representing the user's interaction with the bot.
+        """
         try:
             await interaction.response.defer()
         except disnake.errors.NotFound:
@@ -61,6 +97,13 @@ class BotInformationView(disnake.ui.View):
         button: disnake.ui.Button,
         interaction: disnake.ApplicationCommandInteraction,
     ):
+        """
+        Button handler for the "Uptime" button.
+
+        Args:
+            button (disnake.ui.Button): The button that was clicked.
+            interaction (disnake.ApplicationCommandInteraction): The interaction object representing the user's interaction with the bot.
+        """
         try:
             await interaction.response.defer()
         except disnake.errors.NotFound:
@@ -77,6 +120,13 @@ class BotInformationView(disnake.ui.View):
         button: disnake.ui.Button,
         interaction: disnake.ApplicationCommandInteraction,
     ):
+        """
+        Button handler for the "Commands" button.
+
+        Args:
+            button (disnake.ui.Button): The button that was clicked.
+            interaction (disnake.ApplicationCommandInteraction): The interaction object representing the user's interaction with the bot.
+        """
         try:
             await interaction.response.defer()
         except disnake.errors.NotFound:
@@ -85,14 +135,19 @@ class BotInformationView(disnake.ui.View):
             embed=await self.BotInformation.get_commands(ctx=self.interaction)
         )
 
-    @disnake.ui.button(
-        label="Quit", style=disnake.ButtonStyle.danger, emoji="✖️", row=2
-    )
+    @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.danger, emoji="✖️", row=2)
     async def quit(
         self,
         button: disnake.ui.Button,
         interaction: disnake.ApplicationCommandInteraction,
     ):
+        """
+        Button handler for the "Quit" button.
+
+        Args:
+            button (disnake.ui.Button): The button that was clicked.
+            interaction (disnake.ApplicationCommandInteraction): The interaction object representing the user's interaction with the bot.
+        """
         try:
             await interaction.response.defer()
         except disnake.errors.NotFound:
@@ -101,6 +156,9 @@ class BotInformationView(disnake.ui.View):
         await self.interaction.delete_original_message()
 
     async def on_timeout(self) -> None:
+        """
+        Handler for when the view times out.
+        """
         if self.is_message_deleted:
             return
 

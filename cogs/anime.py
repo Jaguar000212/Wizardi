@@ -3,7 +3,6 @@ from disnake.ext import commands
 import json
 import requests
 import animec
-import datetime
 from disnake.ext.commands.params import Param
 
 from utils.exceptions import NoNeko
@@ -60,12 +59,12 @@ class Anime(commands.Cog):
         await ctx.response.defer()
         anime = animec.Anime(name)
         try:
-            embed = disnake.Embed(
-                title=anime.title_english,
-                url=anime.url,
-                description=f"{anime.description[:300]}....",
-                color=disnake.Colour.random(),
-            )
+            embed = self.bot.Embed(self.bot, ctx, "Requested")
+            embed.title = (anime.title_english,)
+            embed.url = (anime.url,)
+            embed.description = (f"{anime.description[:300]}....",)
+            embed.color = (disnake.Colour.random(),)
+
             embed.add_field(name="Episodes", value=str(anime.episodes))
             embed.add_field(name="Rating", value=str(anime.rating))
             embed.add_field(name="Aired", value=str(anime.aired))
@@ -87,13 +86,6 @@ class Anime(commands.Cog):
             embed.add_field(name="Recommend", value=", ".join(anime.recommend()))
             embed.add_field(name="NSFW status", value="🔞" if anime.is_nsfw() else "🆗")
             embed.set_thumbnail(url=anime.poster)
-            embed.set_author(
-                name=ctx.bot.user.display_name, icon_url=f"{ctx.bot.user.avatar.url}"
-            )
-            embed.set_footer(
-                text=f"Requested by {ctx.author.display_name}",
-                icon_url=ctx.author.display_avatar.url,
-            )
             await ctx.send(embed=embed)
         except AttributeError:
             await ctx.send(
@@ -137,13 +129,14 @@ class Anime(commands.Cog):
                 delete_after=5,
             )
             return
-        embed = disnake.Embed(
-            title=char.title, url=char.url, color=disnake.Colour.random()
-        )
+        embed = self.bot.Embed(self.bot, ctx, "Requested")
+        embed.title = char.title
+        embed.url = char.url
+        embed.color = disnake.Colour.random()
+
         embed.set_image(url=char.image_url)
-        embed.set_footer(text=", ".join(list(char.references.keys())[:2]))
-        embed.set_author(
-            name=ctx.bot.user.display_name, icon_url=f"{ctx.bot.user.avatar.url}"
+        embed.add_field(
+            name="References", value=", ".join(list(char.references.keys())[:2])
         )
         await ctx.send(embed=embed)
 
@@ -182,18 +175,9 @@ class Anime(commands.Cog):
         titles = news.titles
         descriptions = news.description
 
-        embed = disnake.Embed(
-            title="Latest Anime News 🗞️",
-            color=disnake.Colour.random(),
-            timestamp=datetime.datetime.utcnow(),
-        )
-        embed.set_author(
-            name=ctx.bot.user.display_name, icon_url=f"{ctx.bot.user.avatar.url}"
-        )
-        embed.set_footer(
-            text=f"Requested by {ctx.author.display_name}",
-            icon_url=ctx.author.display_avatar.url,
-        )
+        embed = self.bot.Embed(self.bot, ctx, "Requested")
+        embed.title = "Latest Anime News 🗞️"
+        embed.color = disnake.Colour.random()
         embed.set_thumbnail(url=news.images[0])
 
         for i in range(amount):
