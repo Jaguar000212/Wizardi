@@ -94,7 +94,7 @@ class Bot(commands.AutoShardedBot):
         Event handler for when the bot is ready.
         """
         activity = disnake.Activity(
-            type=disnake.ActivityType.listening, name=f"your commands"
+            type=disnake.ActivityType.listening, name="your commands"
         )
         await self.change_presence(activity=activity, status=disnake.Status.online)
 
