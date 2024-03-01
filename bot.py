@@ -3,7 +3,7 @@ import sys
 import traceback
 
 import disnake
-from disnake import AllowedMentions, Intents
+from disnake import Intents
 from disnake.ext import commands
 
 from utils.helpers import Config, Embed
@@ -14,20 +14,30 @@ intents = Intents.default()
 intents.members = True
 intents.message_content = True
 config = Config()
-
+sync_commands = commands.CommandSyncFlags.all()
 
 class Bot(commands.AutoShardedBot):
+    """A subclass of `commands.AutoShardedBot` representing the bot."""
+
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the Bot class.
+
+        Parameters:
+        - args: Additional positional arguments.
+        - kwargs: Additional keyword arguments.
+        """
         super().__init__(
             command_prefix=commands.when_mentioned,
-            strip_after_prefix=True,
-            allowed_mentions=AllowedMentions(everyone=False, users=True, roles=False),
+
+            command_sync_flags=sync_commands,
             intents=intents,
             reload=True,
             *args,
             **kwargs,
         )
         self.config = config
+        self.database = config.database
         self.logger = self.config.logger
         self.name = self.config.name
         self.version = self.config.version
@@ -49,6 +59,12 @@ class Bot(commands.AutoShardedBot):
         )
 
     def load_cogs(self, exts):
+        """
+        Load the cogs.
+
+        Parameters:
+        - exts: The directory path where the cogs are located.
+        """
         self.logger.info("LOADING COGS...")
         for cog in pkgutil.iter_modules([exts]):
             module = f"cogs.{cog.name}"
@@ -60,33 +76,67 @@ class Bot(commands.AutoShardedBot):
                 self.logger.exception(error)
 
     async def on_connect(self):
+        """
+        Event handler for when the bot connects to Discord.
+        """
         print(
-            f"|----------Bot Connected---------|\n"
-            f"|  Bot name: {self.name}\n"
-            f"|  Bot Version: {self.version}\n"
-            f"|  Bot ID: {self.user.id}\n"
-            f"|  Total Guilds: {len(self.guilds)}\n"
-            f"|  Total Shards: {self.shard_count}\n"
-            f"|--------------------------------|"
+            f"|----------------Bot Connected----------------|\n"
+            f"|  {'Bot name':12} : {self.name:27} |\n"
+            f"|  {'Bot Version':12} : {self.version:27} |\n"
+            f"|  {'Bot ID':12} : {self.user.id:<27} |\n"
+            f"|  {'Total Guilds':12} : {len(self.guilds):<27} |\n"
+            f"|  {'Total Shards':12} : {self.shard_count:<27} |\n"
+            f"|---------------------------------------------|"
         )
 
     async def on_ready(self):
-        pass
+        """
+        Event handler for when the bot is ready.
+        """
+        activity = disnake.Activity(
+            type=disnake.ActivityType.listening, name=f"your commands"
+        )
+        await self.change_presence(activity=activity, status=disnake.Status.online)
 
     async def on_shard_connect(self, shard_id: int):
+        """
+        Event handler for when a shard connects.
+
+        Parameters:
+        - shard_id: The ID of the shard that connected.
+        """
         self.logger.info(
             f"SHARD {shard_id} CONNECTED @{round(self.get_shard(shard_id).latency * 1000)} ms"
         )
 
     async def on_shard_diconnect(self, shard_id: int):
+        """
+        Event handler for when a shard disconnects.
+
+        Parameters:
+        - shard_id: The ID of the shard that disconnected.
+        """
         self.logger.warning(f"SHARD {shard_id} DISCONNECTED")
 
     async def on_shard_resumed(self, shard_id: int):
+        """
+        Event handler for when a shard resumes.
+
+        Parameters:
+        - shard_id: The ID of the shard that resumed.
+        """
         self.logger.success(
             f"SHARD {shard_id} RESUMED @{round(self.get_shard(shard_id).latency * 1000)} ms"
         )
 
     async def on_slash_command_error(self, ctx: disnake.AppCmdInter, error: Exception):
+        """
+        Event handler for slash command errors.
+
+        Parameters:
+        - ctx: The context of the slash command.
+        - error: The error that occurred.
+        """
         ctx.application_command.reset_cooldown(ctx)
 
         if isinstance(error, commands.errors.BotMissingPermissions):

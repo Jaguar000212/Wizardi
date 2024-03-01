@@ -9,7 +9,6 @@ import datetime as dt
 from motor.motor_asyncio import AsyncIOMotorClient
 from os import system, name
 
-
 CogEmoji = {
     "Anime": "🎎",
     "Fun": "🎭",
@@ -22,11 +21,22 @@ CogEmoji = {
 }
 
 
-def Embed(bot, ctx, footer):
-    embed = disnake.Embed()
+def Embed(bot, ctx: disnake.AppCmdInter, footer: str):
+    """
+    Creates and returns a disnake.Embed object with specified parameters.
+
+    Args:
+    - bot: The bot instance.
+    - ctx: The disnake.AppCmdInter instance.
+    - footer: The footer text for the embed.
+
+    Returns:
+    - embed: The disnake.Embed object.
+    """
+    embed = disnake.Embed(timestamp=dt.datetime.now(dt.timezone.utc))
     embed.set_author(name=bot.user.display_name, icon_url=bot.user.avatar)
     embed.set_footer(
-        text=f"{footer} by  {ctx.author.display_name}",
+        text=f"{footer} by {ctx.author.display_name}",
         icon_url=ctx.author.display_avatar.url,
     )
 
@@ -34,6 +44,20 @@ def Embed(bot, ctx, footer):
 
 
 def Log(bot, ctx, action, detail, guilty: disnake.Member, mod: disnake.Member):
+    """
+    Creates and returns a disnake.Embed object for logging purposes.
+
+    Args:
+    - bot: The bot instance.
+    - ctx: The context object.
+    - action: The action performed.
+    - detail: The details of the action.
+    - guilty: The member who is guilty.
+    - mod: The moderator who performed the action.
+
+    Returns:
+    - embed: The disnake.Embed object.
+    """
     channel = ""
     hour = time.time()
     stamp = dt.datetime.fromtimestamp(hour).strftime("%Y-%m-%d %H:%M:%S")
@@ -58,6 +82,15 @@ class BotInformation:
     async def get_bot_info(
         self, interaction: disnake.ApplicationCommandInteraction
     ) -> disnake.Embed:
+        """
+        Retrieves and returns bot information as a disnake.Embed object.
+
+        Args:
+        - interaction: The disnake.ApplicationCommandInteraction instance.
+
+        Returns:
+        - em: The disnake.Embed object.
+        """
         version = sys.version_info
         em = disnake.Embed(color=disnake.Colour.random())
 
@@ -85,6 +118,15 @@ class BotInformation:
     async def get_uptime(
         self, ctx: disnake.ApplicationCommandInteraction
     ) -> disnake.Embed:
+        """
+        Retrieves and returns the bot's uptime as a disnake.Embed object.
+
+        Args:
+        - ctx: The disnake.ApplicationCommandInteraction instance.
+
+        Returns:
+        - embed: The disnake.Embed object.
+        """
         uptime = disnake.utils.utcnow() - self.bot.start_time
         time_data = humanize.precisedelta(uptime)
         embed = disnake.Embed(
@@ -95,6 +137,15 @@ class BotInformation:
     async def get_latency(
         self, ctx: disnake.ApplicationCommandInteraction
     ) -> disnake.Embed:
+        """
+        Retrieves and returns the bot's latency as a disnake.Embed object.
+
+        Args:
+        - ctx: The disnake.ApplicationCommandInteraction instance.
+
+        Returns:
+        - embed: The disnake.Embed object.
+        """
         times = []
         counter = 0
         embed = disnake.Embed(colour=disnake.Colour.random())
@@ -137,10 +188,19 @@ class BotInformation:
         return embed
 
     async def get_commands(self, ctx: disnake.AppCommandInteraction) -> disnake.Embed:
+        """
+        Retrieves and returns the bot's commands as a disnake.Embed object.
+
+        Args:
+        - ctx: The disnake.AppCommandInteraction instance.
+
+        Returns:
+        - embed: The disnake.Embed object.
+        """
         embed = disnake.Embed(colour=disnake.Colour.random())
         embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.display_avatar.url)
         for cog in self.bot.cogs:
-            if cog in ("Message", "Help"):
+            if cog in ("Listeners", "Help"):
                 continue
             cogs = self.bot.get_cog(cog)
             cmds = ""
@@ -152,6 +212,15 @@ class BotInformation:
         return embed
 
     async def home(self, ctx: disnake.AppCommandInteraction) -> disnake.Embed:
+        """
+        Retrieves and returns the bot's home information as a disnake.Embed object.
+
+        Args:
+        - ctx: The disnake.AppCommandInteraction instance.
+
+        Returns:
+        - embed: The disnake.Embed object.
+        """
         owner = await self.bot.fetch_user(self.bot.owned)
         t_members = []
         for guild in self.bot.guilds:
@@ -221,6 +290,13 @@ class BotInformationView(disnake.ui.View):
     async def home(
         self, button: disnake.ui.Button, interaction: disnake.AppCommandInteraction
     ):
+        """
+        Button callback function for the "Home" button.
+
+        Args:
+        - button: The disnake.ui.Button instance.
+        - interaction: The disnake.AppCommandInteraction instance.
+        """
         try:
             await interaction.response.defer()
         except disnake.errors.NotFound:
@@ -236,6 +312,13 @@ class BotInformationView(disnake.ui.View):
         button: disnake.ui.Button,
         interaction: disnake.ApplicationCommandInteraction,
     ):
+        """
+        Button callback function for the "Latency" button.
+
+        Args:
+        - button: The disnake.ui.Button instance.
+        - interaction: The disnake.ApplicationCommandInteraction instance.
+        """
         try:
             await interaction.response.defer()
         except disnake.errors.NotFound:
@@ -275,9 +358,7 @@ class BotInformationView(disnake.ui.View):
             embed=await self.BotInformation.get_commands(ctx=self.interaction)
         )
 
-    @disnake.ui.button(
-        label="Quit", style=disnake.ButtonStyle.danger, emoji="✖️", row=2
-    )
+    @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.danger, emoji="✖️", row=2)
     async def quit(
         self,
         button: disnake.ui.Button,

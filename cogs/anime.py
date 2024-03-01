@@ -3,7 +3,6 @@ from disnake.ext import commands
 import json
 import requests
 import animec
-import datetime
 from disnake.ext.commands.params import Param
 
 from utils.exceptions import NoNeko
@@ -11,15 +10,24 @@ from bot import Bot
 
 
 class Anime(commands.Cog):
-    """
-    For Anime fun
-    """
+    """For Anime fun"""
 
     def __init__(self, bot: Bot):
         self.bot = bot
 
     @staticmethod
     def neko_api(ctx, x, msg=""):
+        """
+        Fetches data from the nekos.fun API and creates an embed with the image.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - x (str): The type of neko image to fetch.
+        - msg (str): Additional message to include in the embed.
+
+        Returns:
+        - embed (disnake.Embed): The embed with the neko image.
+        """
         req = requests.get(f"http://api.nekos.fun:8080/api/{x}")
         if req.status_code != 200:
             raise NoNeko("Couldn't load image")
@@ -33,20 +41,30 @@ class Anime(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
-        name="anime-info", description="Get info about an Anime or a Manga"
+        name="anime-info", description="Get information about an Anime or a Manga"
     )
     async def info(
         self, ctx: disnake.AppCmdInter, name=Param(description="Title of the series")
     ):
+        """
+        Retrieves information about an anime or manga series and sends an embed with the details.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - name (str): The title of the anime or manga series.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         anime = animec.Anime(name)
         try:
-            embed = disnake.Embed(
-                title=anime.title_english,
-                url=anime.url,
-                description=f"{anime.description[:300]}.....",
-                color=disnake.Colour.random(),
-            )
+            embed = self.bot.Embed(self.bot, ctx, "Requested")
+            embed.title = anime.title_english
+            embed.url = anime.url
+            embed.description = f"{anime.description[:300]}...."
+            embed.color = disnake.Colour.random()
+
             embed.add_field(name="Episodes", value=str(anime.episodes))
             embed.add_field(name="Rating", value=str(anime.rating))
             embed.add_field(name="Aired", value=str(anime.aired))
@@ -66,15 +84,8 @@ class Anime(commands.Cog):
             embed.add_field(name="Genres", value=", ".join(anime.genres))
             embed.add_field(name="Teaser", value=str(anime.teaser))
             embed.add_field(name="Recommend", value=", ".join(anime.recommend()))
-            embed.add_field(name="NSFW status", value=str(anime.is_nsfw()))
+            embed.add_field(name="NSFW status", value="🔞" if anime.is_nsfw() else "🆗")
             embed.set_thumbnail(url=anime.poster)
-            embed.set_author(
-                name=ctx.bot.user.display_name, icon_url=f"{ctx.bot.user.avatar.url}"
-            )
-            embed.set_footer(
-                text=f"Requested by {ctx.author.display_name}",
-                icon_url=ctx.author.display_avatar.url,
-            )
             await ctx.send(embed=embed)
         except AttributeError:
             await ctx.send(
@@ -92,8 +103,20 @@ class Anime(commands.Cog):
         name="anime-character", description="Get image of an Anime or Manga character"
     )
     async def character(
-        self, ctx: disnake.AppCmdInter, name=Param(description="Name of the character")
+        self,
+        ctx: disnake.AppCmdInter,
+        name: str = Param(description="Name of the character"),
     ):
+        """
+        Retrieves the image of an anime or manga character and sends an embed with the image.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - name (str): The name of the character.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         try:
             char = animec.Charsearch(name)
@@ -106,13 +129,14 @@ class Anime(commands.Cog):
                 delete_after=5,
             )
             return
-        embed = disnake.Embed(
-            title=char.title, url=char.url, color=disnake.Colour.random()
-        )
+        embed = self.bot.Embed(self.bot, ctx, "Requested")
+        embed.title = char.title
+        embed.url = char.url
+        embed.color = disnake.Colour.random()
+
         embed.set_image(url=char.image_url)
-        embed.set_footer(text=", ".join(list(char.references.keys())[:2]))
-        embed.set_author(
-            name=ctx.bot.user.display_name, icon_url=f"{ctx.bot.user.avatar.url}"
+        embed.add_field(
+            name="References", value=", ".join(list(char.references.keys())[:2])
         )
         await ctx.send(embed=embed)
 
@@ -124,6 +148,17 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         amount: int = Param(3, description="No of news per request"),
     ):
+        """
+        Retrieves the latest anime news and sends an embed with the news articles.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - amount (int): The number of news articles to retrieve.
+
+        Returns:
+        - None
+        """
+        num_emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
         await ctx.response.defer()
         try:
             news = animec.Aninews(amount)
@@ -140,24 +175,15 @@ class Anime(commands.Cog):
         titles = news.titles
         descriptions = news.description
 
-        embed = disnake.Embed(
-            title="Latest Anime News",
-            color=disnake.Colour.random(),
-            timestamp=datetime.datetime.utcnow(),
-        )
-        embed.set_author(
-            name=ctx.bot.user.display_name, icon_url=f"{ctx.bot.user.avatar.url}"
-        )
-        embed.set_footer(
-            text=f"Requested by {ctx.author.display_name}",
-            icon_url=ctx.author.display_avatar.url,
-        )
+        embed = self.bot.Embed(self.bot, ctx, "Requested")
+        embed.title = "Latest Anime News 🗞️"
+        embed.color = disnake.Colour.random()
         embed.set_thumbnail(url=news.images[0])
 
         for i in range(amount):
             embed.add_field(
-                name=f"{i+1}) {titles[i]}",
-                value=f"{descriptions[i][:200]}...\n[Read more]({links[i]})",
+                name=f"{num_emojis[i]} {titles[i]}",
+                value=f"> {descriptions[i][:200]}...\n[Read more]({links[i]})",
                 inline=False,
             )
         await ctx.send(embed=embed)
@@ -166,6 +192,15 @@ class Anime(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(name="emote-neko", description="Post a neko")
     async def neko(self, ctx: disnake.AppCmdInter):
+        """
+        Sends an embed with a random neko image.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         await ctx.send(embed=self.neko_api(ctx, "neko"))
 
@@ -173,6 +208,15 @@ class Anime(commands.Cog):
     @commands.cooldown(1, 5)
     @commands.slash_command(name="emote-waifu", description="Post a waifu")
     async def waifu(self, ctx: disnake.AppCmdInter):
+        """
+        Sends an embed with a random waifu image.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         await ctx.send(embed=self.neko_api(ctx, "waifu"))
 
@@ -184,6 +228,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Sends an embed with a neko image and mentions the member being tickled.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.Member): The member to be tickled.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(
@@ -202,6 +256,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Sends an embed with a neko image and mentions the member being poked.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.Member): The member to be poked.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(
@@ -218,6 +282,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Sends an embed with a neko image and mentions the members involved in a kiss.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.Member): The member to be kissed.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(
@@ -236,6 +310,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Sends an embed with a neko image and mentions the member being slapped.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.Member): The member to be slapped.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(
@@ -254,6 +338,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Licks a specified member.
+
+        Parameters:
+        - ctx: The context of the command.
+        - member: The member to be licked.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(embed=self.neko_api(ctx, "lick", f"Licked {member.mention}"))
@@ -268,6 +362,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Sends a hug message to the specified member.
+
+        Parameters:
+        - ctx: The context of the command.
+        - member: The member to hug.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(embed=self.neko_api(ctx, "hug", f"Hugged {member.mention}"))
@@ -282,6 +386,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Pat a member.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+        - member (disnake.Member): The member to pat.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(embed=self.neko_api(ctx, "pat", f"patted {member.mention}"))
@@ -292,6 +406,15 @@ class Anime(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(name="emote-cry", description="Show you're broken")
     async def cry(self, ctx: disnake.AppCmdInter):
+        """
+        Sends a cry animation.
+
+        Parameters:
+        - ctx: The context object representing the command invocation.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         await ctx.send(embed=self.neko_api(ctx, "cry"))
 
@@ -299,6 +422,15 @@ class Anime(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(name="emote-smug", description="Smug")
     async def smug(self, ctx: disnake.AppCmdInter):
+        """
+        Sends a smug anime image.
+
+        Parameters:
+        - ctx: The Discord context object.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         await ctx.send(embed=self.neko_api(ctx, "smug"))
 
@@ -306,6 +438,15 @@ class Anime(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.slash_command(name="emote-lol", description="Laughing out loud")
     async def lol(self, ctx: disnake.AppCmdInter):
+        """
+        Sends a laughing image.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context object representing the command invocation.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
         await ctx.send(embed=self.neko_api(ctx, "laugh"))
 
@@ -317,6 +458,16 @@ class Anime(commands.Cog):
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="mention a member"),
     ):
+        """
+        Feed a member.
+
+        Parameters:
+        - ctx: The context of the command.
+        - member: The member to feed.
+
+        Returns:
+        None
+        """
         await ctx.response.defer()
         try:
             await ctx.send(embed=self.neko_api(ctx, "feed", f"fed {member.mention}"))

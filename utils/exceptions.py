@@ -2,20 +2,17 @@ from disnake.ext.commands import CommandError
 
 
 class NotNeko(CommandError):
-    pass
+    """Exception raised when a neko command is called but the user is not a neko."""
 
 class NoChannelProvided(CommandError):
-    pass
-
+    """Exception raised when a required channel is not provided."""
 
 class NSFWChannel(CommandError):
-    pass
-
+    """Exception raised when a non-NSFW channel is used for an NSFW command."""
 
 class NoVote(CommandError):
-    pass
-
+    """Exception raised when a vote command is called but no vote is provided."""
 
 class NoNeko(CommandError):
-    pass
+    """Exception raised when a neko command is called but no neko is provided."""
 

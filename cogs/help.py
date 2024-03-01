@@ -1,45 +1,33 @@
 import disnake
 from disnake.ext import commands
 import datetime as dt
-from disnake.errors import Forbidden
 from disnake.ext.commands.params import Param
 import sys
+
 from utils.exceptions import NSFWChannel
 from utils.helpers import BotInformationView, CogEmoji
-
 from bot import Bot
 
 
-async def send_embed(ctx, embed):
-    try:
-        await ctx.send(embed=embed)
-    except Forbidden:
-        try:
-            await ctx.send(
-                "Hey, seems like I can't send embeds. Please check my permissions :)"
-            )
-        except Forbidden:
-            await ctx.author.send(
-                f"Hey, seems like I can't send any message in {ctx.channel.name} on {ctx.guild.name}\n"
-                f"May you inform the server team about this issue? :slight_smile: ",
-                embed=embed,
-            )
-
-
 class Help(commands.Cog):
-    """
-    For this simple help!
-    """
+    """Provides help commands for the bot."""
 
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.slash_command(description="For your simple help")
+    @commands.slash_command(description="Displays help information.")
     async def help(
         self,
         ctx: disnake.AppCmdInter,
-        name=Param(None, description="Command or module"),
+        name: str = Param(None, description="Command or module"),
     ):
+        """
+        Displays help information.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The interaction context.
+        - name (str, optional): The name of the command or module to get help for. Defaults to None.
+        """
         await ctx.response.defer()
         input = name
         if input is None:
@@ -49,7 +37,7 @@ class Help(commands.Cog):
             view.add_item(item=menu)
             embed = disnake.Embed(
                 title="Welcome :tada:",
-                description=f"Heya! {ctx.author.mention}. Welcome to **{self.bot.user.display_name}**, a helper bot with some useful commands!\n\nThis is the Help Desk for Wizardi.\nAlso, try /info for bot's information```fix\n\n <> - Required | [] - Optional | () - Default```",
+                description=f"Heya! {ctx.author.mention}. Welcome to **{self.bot.user.display_name}**, a helper bot with some useful commands!\n\nThis is the Help Desk for Wizardi.\nAlso, try `/info` for bot's information.",
                 color=14667786,
             )
             embed.set_author(
@@ -60,7 +48,7 @@ class Help(commands.Cog):
                 icon_url=ctx.author.display_avatar.url,
             )
             for cog in self.bot.cogs:
-                if cog in ("Message", "Help"):
+                if cog in ("Listeners", "Help"):
                     continue
                 modules += f"> \{CogEmoji[cog]} **{cog}**\n"
                 cogs = self.bot.get_cog(cog)
@@ -103,14 +91,14 @@ class Help(commands.Cog):
                             for command in cogs.get_slash_commands():
                                 embed.add_field(
                                     name=f"**{command.name}**",
-                                    value=f"DESCRIPTION - {command.description}",
+                                    value=f"> {command.description}",
                                     inline=False,
                                 )
                     else:
                         for command in cogs.get_slash_commands():
                             embed.add_field(
                                 name=f"**{command.name}**",
-                                value=f"DESCRIPTION - {command.description}",
+                                value=f"> {command.description}",
                                 inline=False,
                             )
                     await ctx.edit_original_message(embed=embed)
@@ -145,14 +133,14 @@ class Help(commands.Cog):
                     for command in cogs.get_slash_commands():
                         embed.add_field(
                             name=f"**/{command.body.name}**",
-                            value=f"DESCRIPTION - {command.body.description}",
+                            value=f"> {command.body.description}",
                             inline=False,
                         )
                 else:
                     for command in cogs.get_slash_commands():
                         embed.add_field(
                             name=f"**/{command.body.name}**",
-                            value=f"DESCRIPTION - {command.body.description}",
+                            value=f"> {command.body.description}",
                             inline=False,
                         )
                 await ctx.send(embed=embed)
@@ -198,9 +186,15 @@ class Help(commands.Cog):
                 await ctx.send(embed=embed, delete_after=4)
 
     @commands.slash_command(
-        name="about", description="Shows information about the bot."
+        name="info-bot", description="Shows information about the bot."
     )
     async def about(self, interaction: disnake.ApplicationCommandInteraction):
+        """
+        Shows information about the bot.
+
+        Parameters:
+        - interaction (disnake.ApplicationCommandInteraction): The interaction context.
+        """
         await interaction.response.defer()
         owner = await self.bot.fetch_user(self.bot.owned)
         t_members = []
@@ -237,65 +231,13 @@ class Help(commands.Cog):
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         embed.set_footer(
             text=f"Python {version[0]}.{version[1]}.{version[2]} • Disnake {disnake.__version__}",
-            icon_url = "https://spng.subpng.com/20180712/jrh/kisspng-professional-python-programmer-computer-programmin-python-logo-download-5b47725bdc5820.2110724115314089879026.jpg"
+            icon_url="https://spng.subpng.com/20180712/jrh/kisspng-professional-python-programmer-computer-programmin-python-logo-download-5b47725bdc5820.2110724115314089879026.jpg",
         )
 
         await interaction.edit_original_message(
             embed=embed,
-            view=BotInformationView(
-                bot=self.bot, interaction=interaction
-            ),
+            view=BotInformationView(bot=self.bot, interaction=interaction),
         )
-
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild):
-
-        me = await self.bot.fetch_user(self.bot.owned)
-        embed = disnake.Embed(
-            title = "Joined Guild",
-            description = f"Joined guild `{guild.name}`, owned by **{guild.owner}**",
-            timestamp = dt.datetime.now(dt.timezone.utc)
-        )
-        embed.add_field(
-            name = "__Members__",
-            value = f"`Total Members` - {guild.member_count}\n`Bots` - {len([member for member in guild.members if member.bot])}"
-        )
-        embed.add_field(
-            name = "__Channels__",
-            value = f"`Total Channels` - {len(guild.channels)}\n`Text Channels` - {len(guild.text_channels)}\n`Voice Channels` - {len(guild.voice_channels)}"
-        )
-        embed.add_field(
-            name = "__Misc__",
-            value = f"`Total Roles` = {len(guild.roles)}\n`Total Emojis` - {len(guild.emojis)}"
-        )
-        try:
-            embed.set_thumbnail(
-                url = f"{guild.icon.url}"
-            )
-        except:
-            pass
-
-        await me.send(embed = embed)
-
-    @commands.Cog.listener()
-    async def on_guild_remove(self, guild):
-        me = await self.bot.fetch_user(self.bot.owned)
-        embed = disnake.Embed(
-            title = "Left Guild",
-            description = f"Left guild `{guild.name}`, owned by **{guild.owner}**",
-            timestamp = dt.datetime.now(dt.timezone.utc)
-        )
-        embed.add_field(
-            name = "__Members__",
-            value = f"`Total Members` - {guild.member_count}\n`Bots` - {len([member for member in guild.members if member.bot])}"
-        )
-        try:
-            embed.set_thumbnail(
-                url = f"{guild.icon.url}"
-            )
-        except:
-            pass
-        await me.send(embed=embed)
 
 
 def setup(bot):

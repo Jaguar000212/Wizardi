@@ -4,6 +4,18 @@ from disnake.errors import HTTPException
 
 
 def launch():
+    """
+    Launches the bot and handles exceptions.
+
+    This function creates an instance of the Bot class, loads the necessary cogs,
+    and runs the bot using the token from the configuration. It also handles
+    HTTPException and other exceptions, logging any errors that occur.
+
+    If the bot is temporarily banned by Discord, it attempts to fix the issue
+    by restarting the bot.
+
+    Note: This function assumes that the Bot class and its dependencies are properly imported.
+    """
     bot = Bot()
     config = bot.config
 

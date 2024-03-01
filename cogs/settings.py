@@ -1,33 +1,33 @@
 import disnake
 from disnake.ext import commands
-import datetime as dt
+
 from bot import Bot
 
 
 class Settings(commands.Cog):
-    """
-    Bot configurations (Must see)
-    """
+    """Bot configurations (Must see)"""
 
     def __init__(self, bot: Bot):
         self.bot = bot
 
     @commands.slash_command(description="Check Bot's latency")
     async def ping(self, ctx: disnake.AppCmdInter):
+        """
+        A command to check the latency of the bot.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+
+        Returns:
+        - None
+        """
         await ctx.response.defer()
-        embed = disnake.Embed(
-            title="Pong!",
-            description=f"{self.bot.icons['stats']} Current Latency - **{round (self.bot.latency * 1000)}ms**",
-            color=65389,
-            timestamp=dt.datetime.now(dt.timezone.utc),
-        )
-        embed.set_author(
-            name=self.bot.user.display_name, icon_url=f"{self.bot.user.avatar.url}"
-        )
-        embed.set_footer(
-            text=f"Requested by {ctx.author.display_name}",
-            icon_url=ctx.author.display_avatar.url,
-        )
+
+        embed = self.bot.Embed(self.bot, ctx, "Requested")
+        embed.title = "Pong!"
+        embed.description = f"{self.bot.icons['stats']} Current Latency - **{round (self.bot.latency * 1000)}ms**"
+        embed.color = 65389
+
         await ctx.send(embed=embed)
 
 
