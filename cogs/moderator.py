@@ -355,7 +355,7 @@ class Moderator(commands.Cog):
 
         embed_dm = self.bot.Embed(self.bot, ctx, "Kicked")
         embed_dm.title = ("Kicked!",)
-        embed_dmdescription = (
+        embed_dm.description = (
             f"You have been kicked from `{ctx.guild.name}` for **{reason}**",
         )
         embed_dm.set_footer(
