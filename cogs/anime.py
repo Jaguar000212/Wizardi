@@ -162,7 +162,7 @@ class Anime(commands.Cog):
         await ctx.response.defer()
         try:
             news = animec.Aninews(amount)
-        except animec.errors.TooManyRequests as e:
+        except animec.errors.TooManyRequests:
             await ctx.send(
                 embed=disnake.Embed(
                     description=f"{self.bot.icons['warning']} Amount cannot exceed 8 per command",
