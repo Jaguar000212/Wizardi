@@ -187,15 +187,14 @@ class Fun(commands.Cog):
         """
         await ctx.response.defer()
         if player.bot:
-            await ctx.send(
+            return await ctx.send(
                 embed=disnake.Embed(
                     description=f"{self.bot.icons['failed']} Bots can't play with you!!"
                 ),
                 ephemeral=True,
             )
-            return
         if ctx.author == player:
-            await ctx.send(
+            return await ctx.send(
                 embed=disnake.Embed(
                     description="Playing with yourself??? Drilling I guess..."
                 ),
@@ -231,21 +230,19 @@ class Fun(commands.Cog):
             player = self.bot.user
         if player.bot:
             if not player == self.bot.user:
-                await ctx.send(
+                return await ctx.send(
                     embed=disnake.Embed(description="Bots can't play with you!!"),
                     ephemeral=True,
                 )
-                return
             await ctx.send(
                 embed=disnake.Embed(description="A challenge to me... Accepted"),
                 ephemeral=True,
             )
         if ctx.author == player:
-            await ctx.send(
+            return await ctx.send(
                 embed=disnake.Embed(description="You need someone else to play with!"),
                 ephemeral=True,
             )
-            return
         embed = self.bot.Embed(self.bot, ctx, "Challenged")
         embed.title = "Rock-Paper-Scissors"
         embed.description = (

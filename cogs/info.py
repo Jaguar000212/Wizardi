@@ -110,8 +110,10 @@ class Info(commands.Cog):
     async def translate(
         self,
         ctx: disnake.AppCmdInter,
-        language: str = Param(description="Language to translate in", choices=Languages),
-        text: str = Param(description="Text to translate", choices=Languages),
+        language: str = Param(
+            description="Language to translate in", autocomplete=language_options
+        ),
+        text: str = Param(description="Text to translate"),
     ):
         """
         Translate text to a specified language.
@@ -125,6 +127,15 @@ class Info(commands.Cog):
         None
         """
         await ctx.response.defer()
+        try:
+            language = Languages[language.capitalize()]
+        except KeyError:
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description=f"{self.bot.icons['failed']} This languag is not suported.",
+                    colour=1199267,
+                )
+            )
         req = requests.get(
             f"https://api.popcat.xyz/translate?to={language}&text={text}"
         )

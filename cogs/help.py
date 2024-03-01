@@ -37,7 +37,7 @@ class Help(commands.Cog):
             view.add_item(item=menu)
             embed = disnake.Embed(
                 title="Welcome :tada:",
-                description=f"Heya! {ctx.author.mention}. Welcome to **{self.bot.user.display_name}**, a helper bot with some useful commands!\n\nThis is the Help Desk for Wizardi.\nAlso, try /info for bot's information```fix\n\n <> - Required | [] - Optional | () - Default```",
+                description=f"Heya! {ctx.author.mention}. Welcome to **{self.bot.user.display_name}**, a helper bot with some useful commands!\n\nThis is the Help Desk for Wizardi.\nAlso, try `/info` for bot's information.",
                 color=14667786,
             )
             embed.set_author(

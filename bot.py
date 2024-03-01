@@ -16,7 +16,6 @@ intents.message_content = True
 config = Config()
 sync_commands = commands.CommandSyncFlags.all()
 
-
 class Bot(commands.AutoShardedBot):
     """A subclass of `commands.AutoShardedBot` representing the bot."""
 
@@ -30,6 +29,7 @@ class Bot(commands.AutoShardedBot):
         """
         super().__init__(
             command_prefix=commands.when_mentioned,
+
             command_sync_flags=sync_commands,
             intents=intents,
             reload=True,

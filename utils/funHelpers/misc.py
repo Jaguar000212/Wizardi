@@ -28,6 +28,8 @@ def slotGame(ctx: disnake.AppCmdInter):
         embed.description = f"{slotmachine} No match, you lost 😢"
         embed.colour = disnake.Colour.red()
 
+    return embed
+
 
 async def beerOffer(
     bot, user: disnake.Member, ctx: disnake.AppCmdInter, reason: str = None

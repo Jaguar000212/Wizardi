@@ -41,7 +41,7 @@ class Anime(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
-        name="anime-info", description="Get info about an Anime or a Manga"
+        name="anime-info", description="Get information about an Anime or a Manga"
     )
     async def info(
         self, ctx: disnake.AppCmdInter, name=Param(description="Title of the series")
@@ -60,10 +60,10 @@ class Anime(commands.Cog):
         anime = animec.Anime(name)
         try:
             embed = self.bot.Embed(self.bot, ctx, "Requested")
-            embed.title = (anime.title_english,)
-            embed.url = (anime.url,)
-            embed.description = (f"{anime.description[:300]}....",)
-            embed.color = (disnake.Colour.random(),)
+            embed.title = anime.title_english
+            embed.url = anime.url
+            embed.description = f"{anime.description[:300]}...."
+            embed.color = disnake.Colour.random()
 
             embed.add_field(name="Episodes", value=str(anime.episodes))
             embed.add_field(name="Rating", value=str(anime.rating))

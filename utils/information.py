@@ -1,12 +1,14 @@
 import disnake
 import datetime as dt
-from googletrans import LANGUAGES
+import json
 import string
+from disnake import OptionChoice
 
 Languages = {}
-for key, value in LANGUAGES.items():
-    Languages[value.capitalize] = key
 
+with open("config/languages.json", "r") as file:
+    Languages = json.load(file)
+language_options = [OptionChoice(name=lang, value=Languages[lang]) for lang in Languages.keys()]
 
 def SuperheroInformation(data: dict, ctx: disnake.AppCmdInter):
     """

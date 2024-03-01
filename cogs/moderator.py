@@ -162,11 +162,9 @@ class Moderator(commands.Cog):
                 await channel.set_permissions(role, send_messages=False)
 
         embed = self.bot.Embed(self.bot, ctx, "Locked")
-        self.title = "Locked!"
-        self.description = (
-            f"{self.bot.icons['lock']} {channel.mention} is now locked for {specific}."
-        )
-        self.colour = 53759
+        embed.title = "Locked!"
+        embed.description = f"{self.bot.icons['lock']} {channel.mention} is now locked for {specific}."
+        embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
             icon_url=ctx.author.display_avatar.url,
@@ -444,7 +442,7 @@ class Moderator(commands.Cog):
     async def unban(
         self,
         ctx: disnake.AppCmdInter,
-        member: disnake.User = Param(description="User to unban"),
+        member: str = Param(description="UserID to unban"),
         reason: str = Param("Not specified!", description="Reason for unban"),
     ):
         """
@@ -459,6 +457,11 @@ class Moderator(commands.Cog):
         None
         """
         await ctx.response.defer()
+        try:
+            member = int(member)
+        except:
+            raise commands.BadArgument("Invalid member ID")
+        member = await self.bot.get_or_fetch_user(int(member))
         embed = self.bot.Embed(self.bot, ctx, "Unbanned")
         embed.title = "Ban Revoked!"
         embed.description = f"{self.bot.icons['moderator']} Unbanned `{member}` with reason **{reason}**"
@@ -494,7 +497,7 @@ class Moderator(commands.Cog):
         self,
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="User to mute"),
-        until: int = Param(description="For minutes to mute"),
+        until: int = Param(description="For minutes to mute (max 40300 mins or 28 days)"),
         reason: str = Param("Not specified!", description="Reason for timeout"),
     ):
         """
@@ -510,10 +513,13 @@ class Moderator(commands.Cog):
         None
         """
         await ctx.response.defer()
+        if until > 40300:
+            raise commands.BadArgument("Timeout duration cannot exceed 40300 minutes")
+        
         await member.timeout(duration=(until * 60), reason=reason)
         if until != 0:
             embed = self.bot.Embed(self.bot, ctx, "Timed-out!")
-            embed.title = ("Timed-out!",)
+            embed.title = "Timed-out!"
             embed.description = f"{self.bot.icons['moderator']} Timed-out `{member}` with reason **{reason}** until {until} minute(s)."
             embed.colour = 53759
 
