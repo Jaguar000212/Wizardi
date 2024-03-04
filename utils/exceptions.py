@@ -16,3 +16,5 @@ class NoVote(CommandError):
 class NoNeko(CommandError):
     """Exception raised when a neko command is called but no neko is provided."""
 
+class NoVote(CommandError):
+    """Exception raised when a vote command is called but no vote is provided."""

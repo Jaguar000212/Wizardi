@@ -18,8 +18,12 @@ class Moderator(commands.Cog):
     @commands.slash_command(
         name="mod-channel-purge", description="Purge messages from a channel"
     )
-    @commands.has_permissions(manage_messages=True)
-    @commands.bot_has_permissions(manage_messages=True)
+    @commands.has_permissions(
+        manage_messages=True, manage_channels=True, manage_roles=True
+    )
+    @commands.bot_has_permissions(
+        manage_messages=True, manage_channels=True, manage_roles=True
+    )
     @commands.cooldown(1, 15, commands.BucketType.guild)
     async def purge(
         self,
@@ -122,8 +126,8 @@ class Moderator(commands.Cog):
 
     @commands.guild_only()
     @commands.slash_command(name="mod-channel-lock", description="Lock a channel")
-    @commands.has_permissions(manage_channels=True)
-    @commands.bot_has_permissions(manage_channels=True)
+    @commands.has_permissions(manage_channels=True, manage_roles=True)
+    @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
     async def lock(
         self,
@@ -163,7 +167,9 @@ class Moderator(commands.Cog):
 
         embed = self.bot.Embed(self.bot, ctx, "Locked")
         embed.title = "Locked!"
-        embed.description = f"{self.bot.icons['lock']} {channel.mention} is now locked for {specific}."
+        embed.description = (
+            f"{self.bot.icons['lock']} {channel.mention} is now locked for {specific}."
+        )
         embed.colour = 53759
         embed.set_footer(
             text=f"Moderator : {ctx.author.display_name}",
@@ -173,8 +179,8 @@ class Moderator(commands.Cog):
 
     @commands.guild_only()
     @commands.slash_command(name="mod-channel-unlock", description="Unlock a channel")
-    @commands.has_permissions(manage_channels=True)
-    @commands.bot_has_permissions(manage_channels=True)
+    @commands.has_permissions(manage_channels=True, manage_roles=True)
+    @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
     async def unlock(
         self,
@@ -221,8 +227,8 @@ class Moderator(commands.Cog):
 
     @commands.guild_only()
     @commands.slash_command(name="mod-channel-hide", description="Hide a channel")
-    @commands.has_permissions(manage_channels=True)
-    @commands.bot_has_permissions(manage_channels=True)
+    @commands.has_permissions(manage_channels=True, manage_roles=True)
+    @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
     async def hide(
         self,
@@ -274,8 +280,8 @@ class Moderator(commands.Cog):
 
     @commands.guild_only()
     @commands.slash_command(name="mod-channel-show", description="Show a channel")
-    @commands.has_permissions(manage_channels=True)
-    @commands.bot_has_permissions(manage_channels=True)
+    @commands.has_permissions(manage_channels=True, manage_roles=True)
+    @commands.bot_has_permissions(manage_channels=True, manage_roles=True)
     @commands.cooldown(1, 15, commands.BucketType.guild)
     async def show(
         self,
@@ -497,7 +503,9 @@ class Moderator(commands.Cog):
         self,
         ctx: disnake.AppCmdInter,
         member: disnake.Member = Param(description="User to mute"),
-        until: int = Param(description="For minutes to mute (max 40300 mins or 28 days)"),
+        until: int = Param(
+            description="For minutes to mute (max 40300 mins or 28 days)"
+        ),
         reason: str = Param("Not specified!", description="Reason for timeout"),
     ):
         """
@@ -515,7 +523,7 @@ class Moderator(commands.Cog):
         await ctx.response.defer()
         if until > 40300:
             raise commands.BadArgument("Timeout duration cannot exceed 40300 minutes")
-        
+
         await member.timeout(duration=(until * 60), reason=reason)
         if until != 0:
             embed = self.bot.Embed(self.bot, ctx, "Timed-out!")

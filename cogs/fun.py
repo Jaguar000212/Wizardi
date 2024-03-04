@@ -8,6 +8,7 @@ from itertools import repeat
 from random import randint
 
 from utils.funHelpers import *
+from utils.checks import voter
 from bot import Bot
 
 
@@ -147,6 +148,7 @@ class Fun(commands.Cog):
         data = (json.loads(req.text))["text"]
         await ctx.send(data)
 
+    @voter()
     @commands.guild_only()
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.slash_command(
@@ -205,7 +207,6 @@ class Fun(commands.Cog):
         embed.description = f"`Challenger` - {ctx.author.mention} ({self.bot.icons['online']})\n`Opponent` - {player.mention} ({self.bot.icons['error']})\n\n```diff\n- Current Turn - {player}```"
         await ctx.send(embed=embed, view=TicTacToe(player, ctx.author))
 
-    @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
         name="game-rps", description="Starts a rock-paper-scissors game with the bot."
@@ -250,6 +251,8 @@ class Fun(commands.Cog):
         )
         await ctx.send(embed=embed, view=RPS(self.bot, ctx.author, player))
 
+    @voter()
+    @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
         name="game-minesweeper", description="Play minesweeper mini-game."
     )

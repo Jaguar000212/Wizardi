@@ -5,6 +5,7 @@ import json
 
 from bot import Bot
 from utils.exceptions import NSFWChannel
+from utils.checks import voter
 
 
 class Nsfw(commands.Cog):
@@ -53,6 +54,7 @@ class Nsfw(commands.Cog):
             embed.description = "No image found"
         return embed
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-fourk", description="4K", nsfw=True)
@@ -68,6 +70,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "4k"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-ass", description="A sexy ass", nsfw=True)
@@ -83,6 +86,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "ass"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-blowjob", description="For a blowjob", nsfw=True)
@@ -98,6 +102,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "blowjob"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-boobs", description="Boobies", nsfw=True)
@@ -113,6 +118,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "boobs"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-cum", description="The baby-gravy", nsfw=True)
@@ -128,6 +134,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "cum"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-feet", description="bottom view...", nsfw=True)
@@ -143,6 +150,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "feet"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-hentai", description="Random hentai", nsfw=True)
@@ -158,6 +166,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "hentai"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-spank", description="booty spank", nsfw=True)
@@ -173,6 +182,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "spank"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-gasm", description="Or-Gasm", nsfw=True)
@@ -188,6 +198,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "gasm"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(name="nsfw-lesbian", description="lesbian fuck", nsfw=True)
@@ -203,6 +214,7 @@ class Nsfw(commands.Cog):
         """
         await ctx.send(embed=self.neko_api(ctx, "lesbian"), ephemeral=True)
 
+    @voter()
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.guild_only()
     @commands.slash_command(

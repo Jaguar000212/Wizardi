@@ -5,6 +5,7 @@ import requests
 import json
 
 from utils.information import *
+from utils.checks import voter
 from bot import Bot
 
 
@@ -25,6 +26,7 @@ class Info(commands.Cog):
         """
         self.bot = bot
 
+    @voter()
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(

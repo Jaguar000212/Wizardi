@@ -2,13 +2,15 @@ import disnake
 from disnake.ext import commands
 import datetime as dt
 
+from bot import Bot
+
 
 class Listeners(commands.Cog):
     """
     A class representing a cog for event listeners in a Discord bot.
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         """
         Initializes the Listeners cog.
 
@@ -25,6 +27,7 @@ class Listeners(commands.Cog):
         Parameters:
         - guild (disnake.Guild): The guild the bot joined.
         """
+        self.bot.dbl_stats.update_stats()
         try:
             await self.bot.database.Configs.insert_one(
                 {"_id": str(guild.id), "LogChannel": None}
@@ -65,6 +68,7 @@ class Listeners(commands.Cog):
         Parameters:
         - guild (disnake.Guild): The guild the bot left.
         """
+        self.bot.dbl_stats.update_stats()
         try:
             await self.bot.database.Configs.delete_one({"_id": str(guild.id)})
         except Exception as e:

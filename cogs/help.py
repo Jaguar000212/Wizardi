@@ -231,7 +231,7 @@ class Help(commands.Cog):
         embed.set_thumbnail(url=self.bot.user.avatar.url)
         embed.set_footer(
             text=f"Python {version[0]}.{version[1]}.{version[2]} • Disnake {disnake.__version__}",
-            icon_url="https://spng.subpng.com/20180712/jrh/kisspng-professional-python-programmer-computer-programmin-python-logo-download-5b47725bdc5820.2110724115314089879026.jpg",
+            icon_url="https://github.com/DisnakeDev/disnake/blob/master/docs/images/disnake_logo.ico?raw=True",
         )
 
         await interaction.edit_original_message(

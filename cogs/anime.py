@@ -4,6 +4,7 @@ import json
 import requests
 import animec
 from disnake.ext.commands.params import Param
+from utils.checks import voter
 
 from utils.exceptions import NoNeko
 from bot import Bot
@@ -38,6 +39,7 @@ class Anime(commands.Cog):
         )
         return embed
 
+    @voter()
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
@@ -96,7 +98,7 @@ class Anime(commands.Cog):
                 delete_after=5,
             )
             return
-
+    
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(
@@ -140,6 +142,7 @@ class Anime(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @voter()
     @commands.guild_only()
     @commands.cooldown(1, 30, commands.BucketType.user)
     @commands.slash_command(name="anime-news", description="Get latest anime news")

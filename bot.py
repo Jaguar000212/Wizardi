@@ -8,6 +8,7 @@ from disnake.ext import commands
 
 from utils.helpers import Config, Embed
 from utils.exceptions import *
+from utils.stats import DiscordBotListStats
 
 
 intents = Intents.default()
@@ -44,6 +45,7 @@ class Bot(commands.AutoShardedBot):
         self.owned = self.config.owner
         self.icons = self.config.icons
         self.Embed = Embed
+        self.dbl_stats = DiscordBotListStats(self)
 
         self.start_time = disnake.utils.utcnow()
 
@@ -225,6 +227,15 @@ class Bot(commands.AutoShardedBot):
                 ),
                 delete_after=4,
             )
+
+        elif isinstance(error, NoVote):
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description=f"{self.icons['failed']} `This is a premium command and you have not voted yet!`",
+                ),
+                delete_after=4,
+            )
+        
         else:
             await ctx.send(
                 embed=disnake.Embed(

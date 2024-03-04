@@ -30,6 +30,25 @@ class Settings(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.slash_command(description="Get the voting link for the bot")
+    async def vote(self, ctx: disnake.AppCmdInter):
+        """
+        A command to get the voting link for the bot.
+
+        Parameters:
+        - ctx (disnake.AppCmdInter): The context of the command.
+
+        Returns:
+        - None
+        """
+        await ctx.response.defer()
+        embed = self.bot.Embed(self.bot, ctx, "Requested")
+        embed.title = "Vote for me!"
+        embed.description = f"The bot supports many useful features but are for premium users only!\nVote now to become one of them...\n[Discord Bot List](https://discordbotlist.com/bots/wizardi)"
+        embed.color = 65389
+
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Settings(bot))
