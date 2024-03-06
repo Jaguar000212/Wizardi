@@ -3,6 +3,13 @@
 # <img src="https://github.com/Jaguar000212/Wizardi/blob/1941c19a858ba0a70bb0938e5bdb89f40db2fe9d/assets/Logo.png?raw=true" height=35 align="center"> **Wizardi**
 > A multi utility Discord bot coded in Python
 
+<div align="center">
+
+[![Top.gg](https://top.gg/api/widget/1213130673368342599.svg)](https://top.gg/bot/1213130673368342599)
+[![Discord Bot List](https://discordbotlist.com/api/v1/bots/1213130673368342599/widget)](https://discordbotlist.com/bots/wizardi)
+
+</div>
+
 My motive is to provide a full functionality discord bot for all your requirements and vanish the need to have multiple bots with same features just to have another one.  
 The bot is based on `Disnake`, the popular fork of `discord.py`
 
