@@ -1,6 +1,6 @@
 # requirements.txt
 
-aiohttp==3.9.3
+aiohttp==3.9.4
 aiosignal==1.3.1
 akinator==1.1.1
 animec==0.4.2
