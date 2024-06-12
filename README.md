@@ -40,11 +40,11 @@ The bot is being hosted as `Wizardi` and is available on [Invite]().
 You can self host the bot too. Follow the given steps.
 - Clone the repo
 ```sh
-git clone https://www.github.com/Jaguar000212/Wizardi.git
+& git clone https://www.github.com/Jaguar000212/Wizardi.git
 ```
 - Install Python libraries
 ```sh
-pip install -r "requirements.txt"
+& pip install -r "requirements.txt"
 ```
 - Edit the `config` file  
     1. Open `config/config.json`.
@@ -54,15 +54,16 @@ pip install -r "requirements.txt"
 If everything is fine, you should be able to launch the bot by -
 ```sh
 # Move to directory
-cd Wizardi
+& cd Wizardi
 
 # Launch the bot
-python3 main.py
+& python3 main.py
 ```
 ### 🧑🏻‍💻 Work in Progress
 - `Music` and `Security` modules.
 - `Auto Mod` and `Auto Loggings`.
-- Much more awaited 😊
+- Much more awaited 😊  
+> Currently, the development has been halted, contributions are welcomed. Also, the bot has been turned off, self hosting is required.
 
 If you are interested in collaborating and introducing new features and changes to the bot, you are warmly welcomed!  
 E-Mail me at [jaguar000212@gmail.com](mailto:jaguar000212@gmail.com) and we can get started. Pull-Requests and issues are also appreciated.
