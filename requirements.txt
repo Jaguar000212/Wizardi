@@ -15,7 +15,7 @@ colorama==0.4.6
 disnake==2.9.1
 dnspython==2.6.1
 frozenlist==1.4.1
-h11==0.14.0
+h11==0.16.0
 h2==4.1.0
 hpack==4.0.0
 hstspreload==2024.2.1
